@@ -7,7 +7,9 @@
 */
 
 import express from "express";
+
 import { MessagesDB } from "../messages-db.js";
+// MessagesDB.init();
 
 import {
   getMessageOr404, // lo uso

@@ -4,6 +4,7 @@ import { SQLiteSessionStorage } from "@shopify/shopify-app-session-storage-sqlit
 import { restResources } from "@shopify/shopify-api/rest/admin/2023-01";
 import { join } from "path";
 import { QRCodesDB } from "./qr-codes-db.js";
+import { MessagesDB } from "./messages-db.js";
 
 // The transactions with Shopify will always be marked as test transactions, unless NODE_ENV is production.
 // See the ensureBilling helper to learn more about billing in this template.
@@ -21,6 +22,8 @@ const sessionDb = new SQLiteSessionStorage(dbFile);
 // Initialize SQLite DB
 QRCodesDB.db = sessionDb.db;
 QRCodesDB.init();
+MessagesDB.db = sessionDb.db;
+MessagesDB.init();
 
 const shopify = shopifyApp({
   api: {

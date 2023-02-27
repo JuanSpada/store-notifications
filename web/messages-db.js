@@ -60,12 +60,13 @@ export const MessagesDB = {
     await this.ready;
     const query = `
       SELECT * FROM ${this.messagesTableName}
-      WHERE shopDomain = ?;
+      WHERE shopDomain = ? OR shopDomain = "default";
     `;
-
+  
     const results = await this.__query(query, [shopDomain]);
     return results;
   },
+  
 
   read: async function (id) {
     await this.ready;
@@ -111,12 +112,9 @@ export const MessagesDB = {
     /* Initializes the connection to the database */
     this.db = new sqlite3.Database(DEFAULT_DB_FILE);
     const hasMessagesTable = await this.__hasMessagesTable();
-    console.log("arrancó init: ", hasMessagesTable)
-
+    
     if (hasMessagesTable) {
       this.ready = Promise.resolve();
-
-      /* Create the messages table if it hasn't been created */
     } else {
       const query = `
         CREATE TABLE ${this.messagesTableName} (
@@ -126,15 +124,14 @@ export const MessagesDB = {
           impressions INTEGER
         )
       `;
-
       /* Tell the various CRUD methods that they can execute */
       this.ready = this.__query(query);
     }
+    
   },
 
   /* Perform a query on the database. Used by the various CRUD methods. */
   __query: function (sql, params = []) {
-    console.log("this inside __query: ", this);
     return new Promise((resolve, reject) => {
       this.db.all(sql, params, (err, result) => {
         if (err) {
