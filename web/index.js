@@ -8,6 +8,7 @@ import shopify from "./shopify.js";
 import GDPRWebhookHandlers from "./gdpr.js";
 
 import applyQrCodeApiEndpoints from "./middleware/qr-code-api.js";
+import applyMessagesApiEndpoints from "./middleware/messages-api.js";
 
 import applyQrCodePublicEndpoints from "./middleware/qr-code-public.js";
 
@@ -39,6 +40,7 @@ applyQrCodePublicEndpoints(app);
 app.use(express.json());
 
 applyQrCodeApiEndpoints(app);
+applyMessagesApiEndpoints(app);
 
 app.use(serveStatic(STATIC_PATH, { index: false }));
 

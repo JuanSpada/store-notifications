@@ -5,10 +5,10 @@
 import sqlite3 from "sqlite3";
 import path from "path";
 
-const DEFAULT_DB_FILE = path.join(process.cwd(), "messages_db.sqlite");
+const DEFAULT_DB_FILE = path.join(process.cwd(), "store_notifications.sqlite");
 
-export const QRCodesDB = {
-  qrCodesTableName: "messages",
+export const MessagesDB = {
+  messagesTableName: "messages",
   db: null,
   ready: null,
 
@@ -19,7 +19,7 @@ export const QRCodesDB = {
     await this.ready;
 
     const query = `
-      INSERT INTO ${this.qrCodesTableName}
+      INSERT INTO ${this.messagesTableName}
       (shopDomain, value, impressions)
       VALUES (?, ?, 0)
       RETURNING id;
@@ -42,7 +42,7 @@ export const QRCodesDB = {
     await this.ready;
 
     const query = `
-      UPDATE ${this.qrCodesTableName}
+      UPDATE ${this.messagesTableName}
       SET
         value = ?
       WHERE
@@ -59,19 +59,18 @@ export const QRCodesDB = {
   list: async function (shopDomain) {
     await this.ready;
     const query = `
-      SELECT * FROM ${this.qrCodesTableName}
+      SELECT * FROM ${this.messagesTableName}
       WHERE shopDomain = ?;
     `;
 
-    // const results = await this.__query(query, [shopDomain]);
-    // return results.map((qrcode) => this.__addImageUrl(qrcode));
-    return await this.__query(query, [shopDomain]);
+    const results = await this.__query(query, [shopDomain]);
+    return results;
   },
 
   read: async function (id) {
     await this.ready;
     const query = `
-      SELECT * FROM ${this.qrCodesTableName}
+      SELECT * FROM ${this.messagesTableName}
       WHERE id = ?;
     `;
     const rows = await this.__query(query, [id]);
@@ -84,7 +83,7 @@ export const QRCodesDB = {
   delete: async function (id) {
     await this.ready;
     const query = `
-      DELETE FROM ${this.qrCodesTableName}
+      DELETE FROM ${this.messagesTableName}
       WHERE id = ?;
     `;
     await this.__query(query, [id]);
@@ -103,24 +102,24 @@ export const QRCodesDB = {
         type = 'table' AND
         name = ?;
     `;
-    const rows = await this.__query(query, [this.qrCodesTableName]);
+    const rows = await this.__query(query, [this.messagesTableName]);
     return rows.length === 1;
   },
 
   /* Initializes the connection with the app's sqlite3 database */
   init: async function () {
-
     /* Initializes the connection to the database */
     this.db = new sqlite3.Database(DEFAULT_DB_FILE);
-    const hasQrCodesTable = await this.__hasMessagesTable();
+    const hasMessagesTable = await this.__hasMessagesTable();
+    console.log("arrancó init: ", hasMessagesTable)
 
-    if (hasQrCodesTable) {
+    if (hasMessagesTable) {
       this.ready = Promise.resolve();
 
-      /* Create the QR code table if it hasn't been created */
+      /* Create the messages table if it hasn't been created */
     } else {
       const query = `
-        CREATE TABLE ${this.qrCodesTableName} (
+        CREATE TABLE ${this.messagesTableName} (
           id INTEGER PRIMARY KEY AUTOINCREMENT NOT NULL,
           shopDomain VARCHAR(511) NOT NULL,
           value VARCHAR(511) NOT NULL,
@@ -135,6 +134,7 @@ export const QRCodesDB = {
 
   /* Perform a query on the database. Used by the various CRUD methods. */
   __query: function (sql, params = []) {
+    console.log("this inside __query: ", this);
     return new Promise((resolve, reject) => {
       this.db.all(sql, params, (err, result) => {
         if (err) {
