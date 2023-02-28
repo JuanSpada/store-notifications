@@ -15,28 +15,35 @@ export const MessagesDB = {
   create: async function ({
     shopDomain,
     value,
+    type,
+    status,
+    impressions
   }) {
     await this.ready;
 
     const query = `
       INSERT INTO ${this.messagesTableName}
-      (shopDomain, value, impressions)
-      VALUES (?, ?, 0)
+      (shopDomain, value, type, impressions, status)
+      VALUES (?, ?, ?, 1, ?)
       RETURNING id;
     `;
 
     const rawResults = await this.__query(query, [
       shopDomain,
       value,
+      type,
+      impressions,
+      status,
     ]);
-
     return rawResults[0].id;
   },
 
   update: async function (
     id,
     {
-      value
+      value,
+      type,
+      status
     }
   ) {
     await this.ready;
@@ -45,12 +52,16 @@ export const MessagesDB = {
       UPDATE ${this.messagesTableName}
       SET
         value = ?
+        type = ?
+        status = ?
       WHERE
         id = ?;
     `;
 
     await this.__query(query, [
       value,
+      type,
+      status,
       id,
     ]);
     return true;
@@ -121,7 +132,9 @@ export const MessagesDB = {
           id INTEGER PRIMARY KEY AUTOINCREMENT NOT NULL,
           shopDomain VARCHAR(511) NOT NULL,
           value VARCHAR(511) NOT NULL,
-          impressions INTEGER
+          type VARCHAR(511) NOT NULL,
+          impressions INTEGER,
+          status INTEGER
         )
       `;
       /* Tell the various CRUD methods that they can execute */

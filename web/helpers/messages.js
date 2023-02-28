@@ -13,11 +13,11 @@ export async function getMessageOr404(req, res, checkDomain = true) {
     if (
       response === undefined ||
       (checkDomain &&
-        (await getShopUrlFromSession(req, res)) !== response.shopDomain)
+        (await getShopUrlFromSession(req, res)) !== response[0].shopDomain)
     ) {
       res.status(404).send();
     } else {
-      return response;
+      return response[0];
     }
   } catch (error) {
     res.status(500).send(error.message);
@@ -33,11 +33,14 @@ export async function getShopUrlFromSession(req, res) {
 /*
 Expect body to contain
 value: string
-tyope: string
+type: string
+status: integer
 */
 export async function parseMessageBody(req, res) {
   return {
     value: req.body.value,
     type: req.body.type,
+    satus: 1,
+    impressions: 0
   };
 }

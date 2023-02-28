@@ -40,8 +40,7 @@ export default function HomePage() {
 
   /* Set the QR codes to use in the list */
   const messagesMarkup = Messages?.length ? (
-    <div Messages={Messages} loading={isRefetching}></div>
-    // <MessageIndex Messages={Messages} loading={isRefetching} />
+    <MessageIndex Messages={Messages} loading={isRefetching} />
   ) : null;
 
   /* loadingMarkup uses the loading component from AppBridge and components from Polaris  */

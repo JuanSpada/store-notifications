@@ -21,12 +21,8 @@ export default function App() {
             <NavigationMenu
               navigationLinks={[
                 {
-                  label: "Dashboard",
-                  destination: "/dashboard",
-                },
-                {
-                  label: "Settings",
-                  destination: "/settings",
+                  label: "Messages",
+                  destination: "/messages",
                 },
               ]}
             />

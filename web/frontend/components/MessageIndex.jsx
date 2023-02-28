@@ -2,7 +2,9 @@ import { useNavigate } from "@shopify/app-bridge-react";
 import {
   Card,
   Icon,
+  Checkbox,
   IndexTable,
+  Link,
   Stack,
   TextStyle,
   Thumbnail,
@@ -13,8 +15,7 @@ import { DiamondAlertMajor, ImageMajor } from "@shopify/polaris-icons";
 /* useMedia is used to support multiple screen sizes */
 import { useMedia } from "@shopify/react-hooks";
 
-/* dayjs is used to capture and format the date a QR code was created or modified */
-import dayjs from "dayjs";
+import MessageCheckbox from "../components/utils/Checkbox";
 
 /* Markup for small screen sizes (mobile) */
 function SmallScreenCard({
@@ -27,7 +28,7 @@ function SmallScreenCard({
   navigate,
 }) {
   return (
-    <UnstyledLink onClick={() => navigate(`/qrcodes/${id}`)}>
+    <UnstyledLink onClick={() => navigate(`/messages/${id}`)}>
       <div
         style={{ padding: "0.75rem 1rem", borderBottom: "1px solid #E1E3E5" }}
       >
@@ -69,25 +70,24 @@ function SmallScreenCard({
   );
 }
 
-export function MessageIndex({ QRCodes, loading }) {
+export function MessageIndex({ Messages, loading }) {
   const navigate = useNavigate();
 
   /* Check if screen is small */
   const isSmallScreen = useMedia("(max-width: 640px)");
 
-  /* Map over QRCodes for small screen */
-  const smallScreenMarkup = QRCodes.map((QRCode) => (
-    <SmallScreenCard key={QRCode.id} navigate={navigate} {...QRCode} />
+  /* Map over Messages for small screen */
+  const smallScreenMarkup = Messages.map((Message) => (
+    <SmallScreenCard key={Message.id} navigate={navigate} {...Message} />
   ));
 
   const resourceName = {
-    singular: "QR code",
-    plural: "QR codes",
+    singular: "Message",
+    plural: "Messages",
   };
 
-  const rowMarkup = QRCodes.map(
-    ({ id, title, product, discountCode, scans, createdAt }, index) => {
-      const deletedProduct = product.title.includes("Deleted product");
+  const rowMarkup = Messages.map(
+    ({ id, value, type, impressions, status, shopDomain }, index) => {
 
       /* The form layout, created using Polaris components. Includes the QR code data set above. */
       return (
@@ -95,38 +95,16 @@ export function MessageIndex({ QRCodes, loading }) {
           id={id}
           key={id}
           position={index}
-          onClick={() => {
-            navigate(`/qrcodes/${id}`);
-          }}
         >
           <IndexTable.Cell>
-            <Thumbnail
-              source={product?.images?.edges[0]?.node?.url || ImageMajor}
-              alt="placeholder"
-              color="base"
-              size="small"
-            />
+            <MessageCheckbox status={status} />
           </IndexTable.Cell>
           <IndexTable.Cell>
-            <UnstyledLink data-primary-link url={`/qrcodes/${id}`}>
-              {truncate(title, 25)}
-            </UnstyledLink>
+              {status === 0 ? <p>{value}</p> : <p style={{color: "grey"}}>{value}</p>}
           </IndexTable.Cell>
-          <IndexTable.Cell>
-            <Stack>
-              {deletedProduct && (
-                <Icon source={DiamondAlertMajor} color="critical" />
-              )}
-              <TextStyle variation={deletedProduct ? "negative" : null}>
-                {truncate(product?.title, 25)}
-              </TextStyle>
-            </Stack>
-          </IndexTable.Cell>
-          <IndexTable.Cell>{discountCode}</IndexTable.Cell>
-          <IndexTable.Cell>
-            {dayjs(createdAt).format("MMMM D, YYYY")}
-          </IndexTable.Cell>
-          <IndexTable.Cell>{scans}</IndexTable.Cell>
+          <IndexTable.Cell>{type}</IndexTable.Cell>
+          <IndexTable.Cell>{impressions}</IndexTable.Cell>
+          <IndexTable.Cell>{shopDomain === "default" ? <p>Cant be edited</p> : <Link onClick={() => navigate(`/messages/${id}`)}>Edit</Link>}</IndexTable.Cell>
         </IndexTable.Row>
       );
     }
@@ -138,16 +116,16 @@ export function MessageIndex({ QRCodes, loading }) {
       {isSmallScreen ? (
         smallScreenMarkup
       ) : (
+        
         <IndexTable
           resourceName={resourceName}
-          itemCount={QRCodes.length}
+          itemCount={Messages.length}
           headings={[
-            { title: "Thumbnail", hidden: true },
-            { title: "Title" },
-            { title: "Product" },
-            { title: "Discount" },
-            { title: "Date created" },
-            { title: "Scans" },
+            { title: "Status" },
+            { title: "Message" },
+            { title: "Type" },
+            { title: "Impressions" },
+            { title: "Actions" },
           ]}
           selectable={false}
           loading={loading}

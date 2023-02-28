@@ -21,7 +21,6 @@ export default function applyMessagesApiEndpoints(app) {
   app.use(express.json());
 
   app.get("/api/messages", async (req, res) => { // testear
-    console.log("entro aca!!")
     try {
       const rawCodeData = await MessagesDB.list(
         await getShopUrlFromSession(req, res)
@@ -33,7 +32,23 @@ export default function applyMessagesApiEndpoints(app) {
     }
   });
 
-  app.post("/api/messages", async (req, res) => { // testear
+  // app.post("/api/messages", async (req, res) => { // testear
+  //   console.log("create message api/message: ", req.body)
+  //   try {
+  //     const id = await MessagesDB.create({
+  //       ...(await parseMessageBody(req)),
+
+  //       /* Get the shop from the authorization header to prevent users from spoofing the data */
+  //       shopDomain: await getShopUrlFromSession(req, res),
+  //     });
+  //     console.log("Created message: ", id) // testear bien esto
+  //     res.status(201).send(id);
+  //   } catch (error) {
+  //     res.status(500).send(error.message);
+  //   }
+  // });
+
+  app.post("/api/messages", async (req, res) => {
     try {
       const id = await MessagesDB.create({
         ...(await parseMessageBody(req)),
@@ -41,8 +56,8 @@ export default function applyMessagesApiEndpoints(app) {
         /* Get the shop from the authorization header to prevent users from spoofing the data */
         shopDomain: await getShopUrlFromSession(req, res),
       });
-      console.log("Created message: ", id) // testear bien esto
-      res.status(201).send(id);
+      const createdMessage = await MessagesDB.read(id);
+      res.status(201).send(createdMessage);
     } catch (error) {
       res.status(500).send(error.message);
     }
@@ -62,6 +77,7 @@ export default function applyMessagesApiEndpoints(app) {
   });
 
   app.get("/api/messages/:id", async (req, res) => { // testear esto
+    console.log("paso a get message: ", req.params.id)
     const message = await getMessageOr404(req, res);
 
     if (message) {
