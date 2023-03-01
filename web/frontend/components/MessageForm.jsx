@@ -16,7 +16,6 @@ import {
   EmptyState,
 } from "@shopify/polaris";
 import {
-  Provider,
   ContextualSaveBar,
   ResourcePicker,
   useAppBridge,
@@ -43,18 +42,6 @@ export function MessageForm({ Message: InitialMessage }) {
 
   /* Message type's select options */
   const [selected, setSelected] = useState(Message?.type || 'Select message type');
-
-  // const handleSelectChange = useCallback((value) => setSelected(value), []);
-  const handleSelectChange = (selected) => {
-    setSelected(selected);
-  };
-  
-  const options = [
-    {label: 'Select message type', value: ''},
-    {label: 'Sales', value: 'sales'},
-    {label: 'Cart', value: 'cart'},
-  ];
-
   /*
     This is a placeholder function that is triggered when the user hits the "Save" button.
 
@@ -130,7 +117,17 @@ export function MessageForm({ Message: InitialMessage }) {
     },
     onSubmit,
   });
-  
+
+  const handleSelectChange = (selected) => {
+    type.onChange(selected);
+    setSelected(selected);
+  };
+  const options = [
+    {label: 'Select message type', value: ''},
+    {label: 'Sales', value: 'sales'},
+    {label: 'Cart', value: 'cart'},
+  ];
+
   /*
     This is a placeholder function that is triggered when the user hits the "Delete" button.
 
