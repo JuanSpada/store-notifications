@@ -38,8 +38,7 @@ export const MessagesDB = {
     id,
     {
       value,
-      type,
-      status
+      type
     }
   ) {
     await this.ready;
@@ -47,9 +46,8 @@ export const MessagesDB = {
     const query = `
       UPDATE ${this.messagesTableName}
       SET
-        value = ?
+        value = ?,
         type = ?
-        status = ?
       WHERE
         id = ?;
     `;
@@ -57,7 +55,6 @@ export const MessagesDB = {
     await this.__query(query, [
       value,
       type,
-      status,
       id,
     ]);
     return true;

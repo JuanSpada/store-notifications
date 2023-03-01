@@ -69,7 +69,7 @@ export default function applyMessagesApiEndpoints(app) {
     if (message) {
       try {
         const response = await MessagesDB.update(req.params.id, await parseMessageBody(req));
-        res.status(200).send(response);
+        res.status(200).send(response[0]);
       } catch (error) {
         res.status(500).send(error.message);
       }
