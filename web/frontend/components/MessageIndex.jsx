@@ -70,7 +70,7 @@ function SmallScreenCard({
   );
 }
 
-export function MessageIndex({ Messages, loading }) {
+export function MessageIndex({ Messages, loading, updateMessage }) {
   const navigate = useNavigate();
 
   /* Check if screen is small */
@@ -97,7 +97,7 @@ export function MessageIndex({ Messages, loading }) {
           position={index}
         >
           <IndexTable.Cell>
-            <MessageCheckbox status={status} />
+            <MessageCheckbox MessageId={id} status={status} updateMessage={updateMessage} />
           </IndexTable.Cell>
           <IndexTable.Cell>
               {status === 1 ? <p>{value}</p> : <p style={{color: "grey"}}>{value}</p>}

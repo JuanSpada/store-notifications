@@ -9,18 +9,18 @@
 import express from "express";
 
 import { MessagesDB } from "../messages-db.js";
-// MessagesDB.init();
 
 import {
-  getMessageOr404, // lo uso
-  getShopUrlFromSession, // lo uso
-  parseMessageBody, // lo uso
+  getMessageOr404,
+  getShopUrlFromSession,
+  parseMessageBody,
 } from "../helpers/messages.js";
 
 export default function applyMessagesApiEndpoints(app) { 
   app.use(express.json());
 
-  app.get("/api/messages", async (req, res) => { // testear
+  // GET MESSAGES
+  app.get("/api/messages", async (req, res) => {
     try {
       const rawCodeData = await MessagesDB.list(
         await getShopUrlFromSession(req, res)
@@ -32,21 +32,19 @@ export default function applyMessagesApiEndpoints(app) {
     }
   });
 
-  // app.post("/api/messages", async (req, res) => { // testear
-  //   console.log("create message api/message: ", req.body)
-  //   try {
-  //     const id = await MessagesDB.create({
-  //       ...(await parseMessageBody(req)),
-
-  //       /* Get the shop from the authorization header to prevent users from spoofing the data */
-  //       shopDomain: await getShopUrlFromSession(req, res),
-  //     });
-  //     console.log("Created message: ", id) // testear bien esto
-  //     res.status(201).send(id);
-  //   } catch (error) {
-  //     res.status(500).send(error.message);
-  //   }
-  // });
+  // CHANGE MESSAGE STATUS
+  app.patch("/api/messages/stop/:id", async (req, res) => {
+    const message = await getMessageOr404(req, res);
+    if (message) {
+      try {
+        await MessagesDB.__changeMessageStatus(req.params.id, await parseMessageBody(req));
+        const response =  await MessagesDB.read(req.params.id);
+        res.status(200).send(response[0]);
+      } catch (error) {
+        res.status(500).send(error.message);
+      }
+    }
+  });
 
   app.post("/api/messages", async (req, res) => {
     try {
@@ -63,7 +61,7 @@ export default function applyMessagesApiEndpoints(app) {
     }
   });
 
-  app.patch("/api/messages/:id", async (req, res) => { // testear
+  app.patch("/api/messages/:id", async (req, res) => {
     const message = await getMessageOr404(req, res);
 
     if (message) {
@@ -76,7 +74,7 @@ export default function applyMessagesApiEndpoints(app) {
     }
   });
 
-  app.get("/api/messages/:id", async (req, res) => { // testear esto
+  app.get("/api/messages/:id", async (req, res) => {
     const message = await getMessageOr404(req, res);
 
     if (message) {
@@ -84,7 +82,7 @@ export default function applyMessagesApiEndpoints(app) {
     }
   });
 
-  app.delete("/api/messages/:id", async (req, res) => { // testear esto
+  app.delete("/api/messages/:id", async (req, res) => {
     const message = await getMessageOr404(req, res);
 
     if (message) {

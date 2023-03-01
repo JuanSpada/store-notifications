@@ -9,8 +9,19 @@ import {
 // import { QRCodeIndex } from "../components";
 import { MessageIndex } from "../components";
 import { useAppQuery } from "../hooks";
+import React, { useState, useEffect } from "react";
 
 export default function HomePage() {
+
+  const [messages, setMessages] = useState([]);
+
+  function updateMessage(index, updatedMessage) {  // NO UPDATEA EL MESSAGE ARREGLAR ESTO
+    console.log("updating message: ", updatedMessage)
+    setMessages((prevState) =>
+      prevState.map((message, i) => (i === index ? updatedMessage : message))
+    );
+  }
+
   /*
     Add an App Bridge useNavigate hook to set up the navigate function.
     This function modifies the top-level browser URL so that you can
@@ -23,7 +34,7 @@ export default function HomePage() {
   */
   /* useAppQuery wraps react-query and the App Bridge authenticatedFetch function */
   const {
-    data: Messages,
+    data: fetchedMessages,
     isLoading,
 
     /*
@@ -34,14 +45,23 @@ export default function HomePage() {
     */
     isRefetching,
   } = useAppQuery({
-    url: "/api/messages",
+    url: "/api/messages"
   });
 
+  
+  // Set the messages state whenever messagesData changes
+  useEffect(() => {
+    if (fetchedMessages) {
+      setMessages(fetchedMessages);
+    }
+  }, [fetchedMessages]);
+  
 
-  /* Set the QR codes to use in the list */
-  const messagesMarkup = Messages?.length ? (
-    <MessageIndex Messages={Messages} loading={isRefetching} />
+  /* Set the Messages to use in the list */
+  const messagesMarkup = messages?.length ? (
+    <MessageIndex Messages={messages} loading={isRefetching} updateMessage={updateMessage} />
   ) : null;
+  
 
   /* loadingMarkup uses the loading component from AppBridge and components from Polaris  */
   const loadingMarkup = isLoading ? (

@@ -148,4 +148,21 @@ export const MessagesDB = {
       });
     });
   },
+
+  /* Change message status. */
+  __changeMessageStatus: async function (id,
+    {
+      status
+    }) {
+    const query = `
+      UPDATE ${this.messagesTableName}
+      SET status = ?
+      WHERE id = ?
+    `;
+    await this.__query(query, [
+      status,
+      id,
+    ]);
+    return true;
+  },
 };

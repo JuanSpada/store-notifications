@@ -11,12 +11,12 @@ export async function getMessageOr404(req, res, checkDomain = true) {
   try {
     const response = await MessagesDB.read(req.params.id);
     if (
-      response === undefined ||
-      (checkDomain &&
-        (await getShopUrlFromSession(req, res)) !== response[0].shopDomain)
+      (checkDomain && (await getShopUrlFromSession(req, res)) !== response[0].shopDomain) &&
+      (await getShopUrlFromSession(req, res) === "default")
     ) {
       res.status(404).send();
     } else {
+      console.log("2 message 404: ", response[0])
       return response[0];
     }
   } catch (error) {
@@ -39,6 +39,7 @@ status: integer
 export async function parseMessageBody(req, res) {
   return {
     value: req.body.value,
-    type: req.body.type
+    type: req.body.type,
+    status: req.body.status
   };
 }
