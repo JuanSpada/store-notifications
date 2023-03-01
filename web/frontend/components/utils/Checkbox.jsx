@@ -23,9 +23,6 @@ function MessageCheckbox(props) {
     if (response.ok) {
       const message = await response.json();
       props.updateMessage(message);
-      // Agregar una especie de success warning
-    }else{
-      // Agregar una especie de error warning
     }
   }, []);
   
