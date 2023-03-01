@@ -22,7 +22,7 @@ export const MessagesDB = {
     const query = `
       INSERT INTO ${this.messagesTableName}
       (shopDomain, value, type, impressions, status)
-      VALUES (?, ?, ?, 1, 1)
+      VALUES (?, ?, ?, 0, 1)
       RETURNING id;
     `;
 
