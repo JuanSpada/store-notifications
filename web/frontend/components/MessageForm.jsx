@@ -65,7 +65,6 @@ export function MessageForm({ Message: InitialMessage }) {
         if (response.ok) {
           makeClean();
           const Message = await response.json();
-          console.log("en message form fetch: ", Message)
           /* if this is a new QR code, then save the QR code and navigate to the edit page; this behavior is the standard when saving resources in the Shopify admin */
           if (!MessageId) {
             navigate(`/messages/${Message.id}`);
@@ -108,7 +107,7 @@ export function MessageForm({ Message: InitialMessage }) {
       type: useField({
         value: Message?.type || "",
         validates: [(value) => {
-          if(value === selected){
+          if(value === ""){
             return "Please select a message type";
           }
         }]
