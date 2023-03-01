@@ -15,10 +15,9 @@ export default function HomePage() {
 
   const [messages, setMessages] = useState([]);
 
-  function updateMessage(index, updatedMessage) {  // NO UPDATEA EL MESSAGE ARREGLAR ESTO
-    console.log("updating message: ", updatedMessage)
+  function updateMessage(updatedMessage) {
     setMessages((prevState) =>
-      prevState.map((message, i) => (i === index ? updatedMessage : message))
+      prevState.map((message) => (message.id === updatedMessage.id ? updatedMessage : message))
     );
   }
 
