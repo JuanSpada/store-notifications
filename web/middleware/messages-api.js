@@ -57,7 +57,7 @@ export default function applyMessagesApiEndpoints(app) {
         shopDomain: await getShopUrlFromSession(req, res),
       });
       const createdMessage = await MessagesDB.read(id);
-      res.status(201).send(createdMessage);
+      res.status(201).send(createdMessage[0]);
     } catch (error) {
       res.status(500).send(error.message);
     }
@@ -77,7 +77,6 @@ export default function applyMessagesApiEndpoints(app) {
   });
 
   app.get("/api/messages/:id", async (req, res) => { // testear esto
-    console.log("paso a get message: ", req.params.id)
     const message = await getMessageOr404(req, res);
 
     if (message) {

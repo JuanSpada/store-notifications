@@ -15,16 +15,14 @@ export const MessagesDB = {
   create: async function ({
     shopDomain,
     value,
-    type,
-    status,
-    impressions
+    type
   }) {
     await this.ready;
 
     const query = `
       INSERT INTO ${this.messagesTableName}
       (shopDomain, value, type, impressions, status)
-      VALUES (?, ?, ?, 1, ?)
+      VALUES (?, ?, ?, 1, 1)
       RETURNING id;
     `;
 
@@ -32,8 +30,6 @@ export const MessagesDB = {
       shopDomain,
       value,
       type,
-      impressions,
-      status,
     ]);
     return rawResults[0].id;
   },

@@ -39,8 +39,6 @@ status: integer
 export async function parseMessageBody(req, res) {
   return {
     value: req.body.value,
-    type: req.body.type,
-    satus: 1,
-    impressions: 0
+    type: req.body.type
   };
 }

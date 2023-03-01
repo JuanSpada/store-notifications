@@ -16,6 +16,7 @@ import {
   EmptyState,
 } from "@shopify/polaris";
 import {
+  Provider,
   ContextualSaveBar,
   ResourcePicker,
   useAppBridge,
@@ -42,7 +43,12 @@ export function MessageForm({ Message: InitialMessage }) {
 
   /* Message type's select options */
   const [selected, setSelected] = useState(Message?.type || 'Select message type');
-  const handleSelectChange = useCallback((value) => setSelected(value), []);
+
+  // const handleSelectChange = useCallback((value) => setSelected(value), []);
+  const handleSelectChange = (selected) => {
+    setSelected(selected);
+  };
+  
   const options = [
     {label: 'Select message type', value: ''},
     {label: 'Sales', value: 'sales'},
@@ -72,6 +78,7 @@ export function MessageForm({ Message: InitialMessage }) {
         if (response.ok) {
           makeClean();
           const Message = await response.json();
+          console.log("en message form fetch: ", Message)
           /* if this is a new QR code, then save the QR code and navigate to the edit page; this behavior is the standard when saving resources in the Shopify admin */
           if (!MessageId) {
             navigate(`/messages/${Message.id}`);
@@ -112,13 +119,14 @@ export function MessageForm({ Message: InitialMessage }) {
         validates: [notEmptyString("Please enter your message")],
       }),
       type: useField({
-        value: selected,
+        value: Message?.type || "",
         validates: [(value) => {
-          if(value === "Select message type"){
+          if(value === selected){
             return "Please select a message type";
           }
         }]
       }),
+  
     },
     onSubmit,
   });
@@ -139,7 +147,7 @@ export function MessageForm({ Message: InitialMessage }) {
     });
 
     if (response.ok) {
-      navigate(`/`);
+      navigate(`/messages`);
     }
   }, [Message]);
   
@@ -207,7 +215,7 @@ export function MessageForm({ Message: InitialMessage }) {
         <Layout.Section secondary>
           <Card>
             <Stack>
-
+                
             </Stack>
 
           </Card>

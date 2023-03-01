@@ -100,7 +100,7 @@ export function MessageIndex({ Messages, loading }) {
             <MessageCheckbox status={status} />
           </IndexTable.Cell>
           <IndexTable.Cell>
-              {status === 0 ? <p>{value}</p> : <p style={{color: "grey"}}>{value}</p>}
+              {status === 1 ? <p>{value}</p> : <p style={{color: "grey"}}>{value}</p>}
           </IndexTable.Cell>
           <IndexTable.Cell>{type}</IndexTable.Cell>
           <IndexTable.Cell>{impressions}</IndexTable.Cell>
