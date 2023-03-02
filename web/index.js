@@ -9,6 +9,7 @@ import GDPRWebhookHandlers from "./gdpr.js";
 
 import applyQrCodeApiEndpoints from "./middleware/qr-code-api.js";
 import applyMessagesApiEndpoints from "./middleware/messages-api.js";
+import applySettingsApiEndpoints from "./middleware/settings-api.js";
 
 import applyQrCodePublicEndpoints from "./middleware/qr-code-public.js";
 
@@ -41,6 +42,7 @@ app.use(express.json());
 
 applyQrCodeApiEndpoints(app);
 applyMessagesApiEndpoints(app);
+applySettingsApiEndpoints(app);
 
 app.use(serveStatic(STATIC_PATH, { index: false }));
 

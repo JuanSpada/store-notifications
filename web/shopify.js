@@ -5,6 +5,7 @@ import { restResources } from "@shopify/shopify-api/rest/admin/2023-01";
 import { join } from "path";
 import { QRCodesDB } from "./qr-codes-db.js";
 import { MessagesDB } from "./messages-db.js";
+import { SettingsDB } from "./settings-db.js";
 
 // The transactions with Shopify will always be marked as test transactions, unless NODE_ENV is production.
 // See the ensureBilling helper to learn more about billing in this template.
@@ -24,7 +25,8 @@ QRCodesDB.db = sessionDb.db;
 QRCodesDB.init();
 MessagesDB.db = sessionDb.db;
 MessagesDB.init();
-
+SettingsDB.db = sessionDb.db;
+SettingsDB.init();
 const shopify = shopifyApp({
   api: {
     apiVersion: LATEST_API_VERSION,
@@ -40,5 +42,4 @@ const shopify = shopifyApp({
   },
   sessionStorage: sessionDb,
 });
-
 export default shopify;

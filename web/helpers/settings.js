@@ -1,4 +1,4 @@
-import { MessagesDB } from "../messages-db.js";
+import { SettingsDB } from "../settings-db.js";
 
 /*
   The app's database stores the productId and the discountId.
@@ -7,9 +7,9 @@ import { MessagesDB } from "../messages-db.js";
   This data is also queried so that the full state can be saved to the database, in order to generate QR code links.
 */
 
-export async function getMessageOr404(req, res, checkDomain = true) {
+export async function getSettingsOr404(req, res, checkDomain = true) {
   try {
-    const response = await MessagesDB.read(req.params.id);
+    const response = await SettingsDB.read(req.params.id);
     if (
       (checkDomain && (await getShopUrlFromSession(req, res)) !== response[0].shopDomain) &&
       (await getShopUrlFromSession(req, res) === "default")
@@ -35,7 +35,7 @@ value: string
 type: string
 status: integer
 */
-export async function parseMessageBody(req, res) {
+export async function parseSettingsBody(req, res) {
   return {
     value: req.body.value,
     type: req.body.type,

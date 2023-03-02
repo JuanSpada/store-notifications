@@ -20,7 +20,7 @@ import {
 // import { QRCodeIndex } from "../components";
 import { MessageIndex } from "../components";
 import { useAppQuery } from "../hooks";
-import React, { useState, useCallback } from "react";
+import React, { useState, useCallback, useEffect } from "react";
 import { useForm, useField, notEmptyString } from "@shopify/react-form";
 
 
@@ -33,96 +33,12 @@ export default function HomePage() {
   */
   const navigate = useNavigate();
 
-  /* State de los checkbox */
-  const [storeCheckbox, setStoreCheckbox] = useState(false);
-  const storeCheckboxHandler = useCallback(
-    (value) => setStoreCheckbox(value),
-    [],
-  );
-
-  const [cartCheckbox, setCartCheckbox] = useState(false);
-  const cartCheckboxHandler = useCallback(
-    (value) => setCartCheckbox(value),
-    [],
-  );
-
-  const [inventoryCheckbox, setInventoryCheckbox] = useState(false);
-  const inventoryCheckboxHandler = useCallback(
-    (value) => setInventoryCheckbox(value),
-    [],
-  );
-
-  /* State de los radio */
-  const [positionX, setPositionX] = useState("disabled");
-  const handleChangePositionX = useCallback((_checked, newValue) => {
-    setPositionX(newValue);
-  }, []);
-
-  const [positionY, setPositionY] = useState("disabled");
-  const handleChangePositionY = useCallback((_checked, newValue) => {
-    setPositionY(newValue);
-  }, []);
-
-  /* Style select */
-  const [selectedStyle, setSelectedStyle] = useState('today');
-  const handleSelectStyleChange = useCallback((value) => setSelectedStyle(value), []);
-  const optionsStyle = [
-    { label: 'Minimal', value: 'minimal' },
-    { label: 'Bold', value: 'bold' },
-    { label: 'Playful', value: 'playful' },
-    { label: 'Elegant', value: 'elegant' },
-  ];
-
-  /* Font select */
-  const [selectedFont, setSelectedFont] = useState('today');
-  const handleSelectFontChange = useCallback((value) => setSelectedFont(value), []);
-  const optionsFont = [
-    { label: 'Font #1', value: '1' },
-    { label: 'Font #2', value: '2' },
-    { label: 'Font #3', value: '3' },
-    { label: 'Font #4', value: '4' },
-  ];
-
-
-  // Handle form validation
-  const {
-    fields: {
-      showSettingsStatus,
-      showCartStatus,
-      showInventoryStatus,
-    },
-    dirty,
-    reset,
-    submitting,
-    submit,
-    makeClean,
-  } = useForm({
-    fields: {
-      showSettingsStatus: useField({
-        // value: Message?.value || "",
-        value: "",
-        validates: [notEmptyString("Please enter your message")],
-      }),
-      showCartStatus: useField({
-        // value: Message?.type || "",
-        value: "",
-        validates: [(value) => {
-          if (value === "") {
-            return "Please select a message type";
-          }
-        }]
-      }),
-
-    },
-    // onSubmit,
-  });
-
-  /*
+    /*
     These are mock values. Setting these values lets you preview the loading markup and the empty state.
   */
   /* useAppQuery wraps react-query and the App Bridge authenticatedFetch function */
   const {
-    data: fetchedMessages,
+    data: fetchedSettings,
     isLoading,
 
     /*
@@ -133,9 +49,170 @@ export default function HomePage() {
     */
     isRefetching,
   } = useAppQuery({
-    url: "/api/messages"
+    url: "/api/settings"
   });
 
+  // Handle form validation
+  const {
+    fields: {
+      displaySalesStatus,
+      displayCartStatus,
+      displayInventoryStatus,
+      positionX,
+      positionY,
+      style,
+      backgroundColor,
+      textColor,
+      font
+    },
+    dirty,
+    reset,
+    submitting,
+    submit,
+    makeClean,
+  } = useForm({
+    fields: {
+      displaySalesStatus: useField({
+        value: fetchedSettings?.displaySalesStatus || "",
+      }),
+      displayCartStatus: useField({
+        value: fetchedSettings?.displayCartStatus || "",
+      }),
+      displayInventoryStatus: useField({
+        value: fetchedSettings?.displayInventoryStatus || "",
+      }),
+      positionX: useField({
+        value: fetchedSettings?.positionX || "",
+      }),
+      positionY: useField({
+        value: fetchedSettings?.positionY || "",
+      }),
+      style: useField({
+        value: fetchedSettings?.style || "",
+        validates: [(value) => {
+          if(value === ""){
+            return "Please select a message type";
+          }
+        }]
+      }),
+      backgroundColor: useField({
+        value: fetchedSettings?.backgroundColor || "",
+      }),
+      textColor: useField({
+        value: fetchedSettings?.textColor || "",
+      }),
+      font: useField({
+        value: fetchedSettings?.font || "",
+        validates: [(value) => {
+          if(value === ""){
+            return "Please select a message type";
+          }
+        }]
+      }),
+    },
+    // onSubmit,
+  });
+
+  /* State de los checkbox */
+  const [salesCheckbox, setSalesCheckbox] = useState(false);
+  const salesCheckboxHandler = useCallback(
+    (value) => {
+      setSalesCheckbox(value);
+      displaySalesStatus.onChange(value);
+    },
+    [],
+  );
+
+  const [cartCheckbox, setCartCheckbox] = useState(false);
+  const cartCheckboxHandler = useCallback(
+    (value) => {
+      setCartCheckbox(value);
+      displayCartStatus.onChange(value);
+    },
+    [],
+  );
+
+  const [inventoryCheckbox, setInventoryCheckbox] = useState(false);
+  const inventoryCheckboxHandler = useCallback(
+    (value) => {
+      setInventoryCheckbox(value);
+      displayInventoryStatus.onChange(value);
+    },
+    [],
+  );
+
+  /* State de los radio */
+  const [positionXValue, setPositionX] = useState("left");
+  const handleChangePositionX = useCallback((_checked, newValue) => {
+    setPositionX(newValue);
+    positionX.onChange(newValue);
+  }, []);
+
+  const [positionYValue, setPositionY] = useState("bottom");
+  const handleChangePositionY = useCallback((_checked, newValue) => {
+    setPositionY(newValue);
+    positionY.onChange(newValue);
+  }, []);
+
+  /* Style select */
+  const [selectedStyle, setSelectedStyle] = useState('today');
+  const handleSelectStyleChange = (value) => {
+    setSelectedStyle(value);
+    style.onChange(value);
+  };
+  const optionsStyle = [
+    {label: 'Select notification style', value: ''},
+    { label: 'Minimal', value: 'minimal' },
+    { label: 'Bold', value: 'bold' },
+    { label: 'Playful', value: 'playful' },
+    { label: 'Elegant', value: 'elegant' },
+  ];
+
+  /* Background color field */
+  const [backgroundColorValue, setBackgroundColor] = useState();
+  const handleBackgroundColorChange = useCallback((newValue) => {
+    setBackgroundColor(newValue);
+    backgroundColor.onChange(newValue);
+  }, []);
+
+  /* Text color field */
+  const [textColorValue, setTextColor] = useState();
+  const handleTextColorChange = useCallback((newValue) => {
+    setTextColor(newValue);
+    textColor.onChange(newValue);
+  }, []);
+
+  /* Font select */
+  const [selectedFont, setSelectedFont] = useState('today');
+  const handleSelectFontChange = useCallback((value) => {
+    setSelectedFont(value);
+    font.onChange(value);
+  }, []);
+  const optionsFont = [
+    {label: 'Select notification font', value: ''},
+    {label: 'Use same as my store', value: 'default'},
+    { label: 'Font #1', value: '1' },
+    { label: 'Font #2', value: '2' },
+    { label: 'Font #3', value: '3' },
+    { label: 'Font #4', value: '4' },
+  ];
+
+  /* useEffect para asignar los valores al formulario */
+  useEffect(() => {
+    if (fetchedSettings) {
+      setSalesCheckbox(fetchedSettings.displaySalesStatus);
+      setCartCheckbox(fetchedSettings.displayCartStatus);
+      setInventoryCheckbox(fetchedSettings.displayInventoryStatus);
+      setPositionY(fetchedSettings.positionY)
+      setPositionX(fetchedSettings.positionX)
+      setSelectedStyle(fetchedSettings.style)
+      setSelectedFont(fetchedSettings.font)
+      setBackgroundColor(fetchedSettings.backgroundColor)
+      setTextColor(fetchedSettings.textColor)
+    }
+  }, [fetchedSettings]);
+  
+  
 
   /* loadingMarkup uses the loading component from AppBridge and components from Polaris  */
   const loadingMarkup = isLoading ? (
@@ -162,7 +239,7 @@ export default function HomePage() {
       // }}
       />
       {loadingMarkup}
-      {fetchedMessages?.length ?
+      {fetchedSettings?
         <Layout>
           <Layout.Section>
             <Form>
@@ -188,8 +265,8 @@ export default function HomePage() {
                     <div>
                       <Checkbox
                         label="Sales: Enable or disable notifications when a customer makes a purchase."
-                        checked={storeCheckbox}
-                        onChange={storeCheckboxHandler}
+                        checked={salesCheckbox}
+                        onChange={salesCheckboxHandler}
                       />
                     </div>
                     <div>
@@ -206,6 +283,9 @@ export default function HomePage() {
                         onChange={inventoryCheckboxHandler}
                       />
                     </div>
+                    <div style={{marginTop: "1rem"}}>
+                      <p>Edit notifications messages</p> 
+                    </div>
                   </div>
                 </Card>
                 <Card title="Customizations:" distribution="fill">
@@ -217,17 +297,19 @@ export default function HomePage() {
                           <div>
                             <RadioButton
                               label="Top"
-                              checked={positionY === "disabled"}
+                              checked={positionYValue === "top"}
                               name="positionY"
-                              onChange={() => handleChangePositionY(false, "disabled")}
+                              onChange={() => handleChangePositionY(false, "top")}
+                              value={"top"}
                             />
                           </div>
                           <div>
                             <RadioButton
                               label="Bottom"
                               name="positionY"
-                              checked={positionY === "optional"}
-                              onChange={() => handleChangePositionY(false, "optional")}
+                              checked={positionYValue === "bottom"}
+                              onChange={() => handleChangePositionY(false, "bottom")}
+                              value={"bottom"}
                             />
                           </div>
                         </div>
@@ -236,17 +318,19 @@ export default function HomePage() {
                           <div>
                             <RadioButton
                               label="Right"
-                              checked={positionX === "disabled"}
+                              checked={positionXValue === "right"}
                               name="positionX"
-                              onChange={() => handleChangePositionX(false, "disabled")}
+                              onChange={() => handleChangePositionX(false, "right")}
+                              value="right"
                             />
                           </div>
                           <div>
                             <RadioButton
-                              checked={positionX === "optional"}
+                              checked={positionXValue === "left"}
                               label="Left"
                               name="positionX"
-                              onChange={() => handleChangePositionX(false, "optional")}
+                              onChange={() => handleChangePositionX(false, "left")}
+                              value="left"
                             />
                           </div>
                         </div>
@@ -264,8 +348,8 @@ export default function HomePage() {
                           <TextField
                             prefix="#"
                             label="Background Color:"
-                            value={"value"}
-                            // onChange={handleChange}
+                            value={backgroundColorValue}
+                            onChange={handleBackgroundColorChange}
                             autoComplete="off"
                           />
                         </div>
@@ -273,8 +357,8 @@ export default function HomePage() {
                           <TextField
                             prefix="#"
                             label="Text Color:"
-                            // value={value}
-                            // onChange={handleChange}
+                            value={textColorValue}
+                            onChange={handleTextColorChange}
                             autoComplete="off"
                           />
                         </div>

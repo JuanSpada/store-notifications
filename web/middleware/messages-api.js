@@ -22,10 +22,10 @@ export default function applyMessagesApiEndpoints(app) {
   // GET MESSAGES
   app.get("/api/messages", async (req, res) => {
     try {
-      const rawCodeData = await MessagesDB.list(
+      const rawMessagesData = await MessagesDB.list(
         await getShopUrlFromSession(req, res)
       );
-      res.status(200).send(rawCodeData);
+      res.status(200).send(rawMessagesData);
     } catch (error) {
       console.error(error);
       res.status(500).send(error.message);
