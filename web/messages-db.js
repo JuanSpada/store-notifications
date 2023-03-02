@@ -60,7 +60,7 @@ export const MessagesDB = {
     return true;
   },
 
-  list: async function (shopDomain) {
+  list: async function (shopDomain) { // vamos a tener que cambiar esto, no usar mas los default y hacer que se creen en un principio y de paso los hacemos editables
     await this.ready;
     const query = `
       SELECT * FROM ${this.messagesTableName}
