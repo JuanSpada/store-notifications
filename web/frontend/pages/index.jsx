@@ -11,6 +11,7 @@ import {
   TextField,
   FormLayout,
   Form,
+  Link
 } from "@shopify/polaris";
 
 import {
@@ -284,7 +285,7 @@ export default function HomePage() {
                       />
                     </div>
                     <div style={{marginTop: "1rem"}}>
-                      <p>Edit notifications messages</p> 
+                      <Link onClick={() => navigate("/messages")}>Edit notifications messages</Link>
                     </div>
                   </div>
                 </Card>
