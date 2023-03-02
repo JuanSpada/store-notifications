@@ -34,6 +34,33 @@ export default function HomePage() {
   */
   const navigate = useNavigate();
 
+
+  const onSubmit = useCallback(
+    (body) => {
+      (async () => {
+        const parsedBody = body;
+        console.log("parsedBody: ", parsedBody)
+        return { status: "success" };
+        const url = "/api/settings";
+        const method = "PATCH";
+        /* use (authenticated) fetch from App Bridge to send the request to the API and, if successful, clear the form to reset the ContextualSaveBar and parse the response JSON */
+        const response = await fetch(url, { 
+          method,
+          body: JSON.stringify(parsedBody),
+          headers: { "Content-Type": "application/json" },
+        });
+        if (response.ok) {
+          makeClean();
+          console.log("response.body: ", response.body)
+          const Settings = await response.json();
+        }
+      })();
+      return { status: "success" };
+    },
+    []
+  );
+
+
     /*
     These are mock values. Setting these values lets you preview the loading markup and the empty state.
   */
@@ -111,7 +138,7 @@ export default function HomePage() {
         }]
       }),
     },
-    // onSubmit,
+    onSubmit,
   });
 
   /* State de los checkbox */
