@@ -1,15 +1,31 @@
 import { useNavigate, TitleBar, Loading } from "@shopify/app-bridge-react";
 import {
   Card,
-  EmptyState,
+  RadioButton,
   Layout,
+  Checkbox,
   Page,
   SkeletonBodyText,
+  Select,
+  Stack,
+  TextField,
+  FormLayout,
+  Form,
 } from "@shopify/polaris";
-import { QRCodeIndex } from "../components";
+
+import {
+  ContextualSaveBar,
+} from "@shopify/app-bridge-react";
+
+// import { QRCodeIndex } from "../components";
+import { MessageIndex } from "../components";
 import { useAppQuery } from "../hooks";
+import React, { useState, useCallback } from "react";
+import { useForm, useField, notEmptyString } from "@shopify/react-form";
+
 
 export default function HomePage() {
+
   /*
     Add an App Bridge useNavigate hook to set up the navigate function.
     This function modifies the top-level browser URL so that you can
@@ -17,12 +33,96 @@ export default function HomePage() {
   */
   const navigate = useNavigate();
 
+  /* State de los checkbox */
+  const [storeCheckbox, setStoreCheckbox] = useState(false);
+  const storeCheckboxHandler = useCallback(
+    (value) => setStoreCheckbox(value),
+    [],
+  );
+
+  const [cartCheckbox, setCartCheckbox] = useState(false);
+  const cartCheckboxHandler = useCallback(
+    (value) => setCartCheckbox(value),
+    [],
+  );
+
+  const [inventoryCheckbox, setInventoryCheckbox] = useState(false);
+  const inventoryCheckboxHandler = useCallback(
+    (value) => setInventoryCheckbox(value),
+    [],
+  );
+
+  /* State de los radio */
+  const [positionX, setPositionX] = useState("disabled");
+  const handleChangePositionX = useCallback((_checked, newValue) => {
+    setPositionX(newValue);
+  }, []);
+
+  const [positionY, setPositionY] = useState("disabled");
+  const handleChangePositionY = useCallback((_checked, newValue) => {
+    setPositionY(newValue);
+  }, []);
+
+  /* Style select */
+  const [selectedStyle, setSelectedStyle] = useState('today');
+  const handleSelectStyleChange = useCallback((value) => setSelectedStyle(value), []);
+  const optionsStyle = [
+    { label: 'Minimal', value: 'minimal' },
+    { label: 'Bold', value: 'bold' },
+    { label: 'Playful', value: 'playful' },
+    { label: 'Elegant', value: 'elegant' },
+  ];
+
+  /* Font select */
+  const [selectedFont, setSelectedFont] = useState('today');
+  const handleSelectFontChange = useCallback((value) => setSelectedFont(value), []);
+  const optionsFont = [
+    { label: 'Font #1', value: '1' },
+    { label: 'Font #2', value: '2' },
+    { label: 'Font #3', value: '3' },
+    { label: 'Font #4', value: '4' },
+  ];
+
+
+  // Handle form validation
+  const {
+    fields: {
+      showSettingsStatus,
+      showCartStatus,
+      showInventoryStatus,
+    },
+    dirty,
+    reset,
+    submitting,
+    submit,
+    makeClean,
+  } = useForm({
+    fields: {
+      showSettingsStatus: useField({
+        // value: Message?.value || "",
+        value: "",
+        validates: [notEmptyString("Please enter your message")],
+      }),
+      showCartStatus: useField({
+        // value: Message?.type || "",
+        value: "",
+        validates: [(value) => {
+          if (value === "") {
+            return "Please select a message type";
+          }
+        }]
+      }),
+
+    },
+    // onSubmit,
+  });
+
   /*
     These are mock values. Setting these values lets you preview the loading markup and the empty state.
   */
   /* useAppQuery wraps react-query and the App Bridge authenticatedFetch function */
   const {
-    data: QRCodes,
+    data: fetchedMessages,
     isLoading,
 
     /*
@@ -33,14 +133,9 @@ export default function HomePage() {
     */
     isRefetching,
   } = useAppQuery({
-    url: "/api/qrcodes",
+    url: "/api/messages"
   });
 
-
-  /* Set the QR codes to use in the list */
-  const qrCodesMarkup = QRCodes?.length ? (
-    <QRCodeIndex QRCodes={QRCodes} loading={isRefetching} />
-  ) : null;
 
   /* loadingMarkup uses the loading component from AppBridge and components from Polaris  */
   const loadingMarkup = isLoading ? (
@@ -50,45 +145,162 @@ export default function HomePage() {
     </Card>
   ) : null;
 
-  /* Use Polaris Card and EmptyState components to define the contents of the empty state */
-  const emptyStateMarkup =
-    !isLoading && !QRCodes?.length ? (
-      <Card sectioned>
-        <EmptyState
-          heading="Create unique QR codes for your product"
-          action={{
-            content: "Create QR code",
-            onAction: () => navigate("/qrcodes/new"),
-          }}
-          image="https://cdn.shopify.com/s/files/1/0262/4071/2726/files/emptystate-files.png"
-        >
-          <p>
-            Allow customers to scan codes and buy products using their phones.
-          </p>
-        </EmptyState>
-      </Card>
-    ) : null;
-
   /*
     Use Polaris Page and TitleBar components to create the page layout,
     and include the empty state contents set above.
   */
+
+
+  // NO PUEDO HACER QUE APAREZCA ALA IZQUIERDA Y FUNCIONE DISTRIBUTION FIELD EN STACK QUE ESLO QUE HACE RESPONSIVE EN SHOPIFY ADMIN, ESTO SERIA PARA MOSTRAR EL PREVIEW A LA DERECHA. ESTA PARTE ES COMPLIQUETIXD
   return (
-    <Page fullWidth={!!qrCodesMarkup}>
+    <Page fullWidth={true}>
       <TitleBar
-        title="QR codes"
-        primaryAction={{
-          content: "Create QR code",
-          onAction: () => navigate("/qrcodes/new"),
-        }}
+        title="Account setup"
+      // primaryAction={{
+      //   content: "Create message",
+      //   onAction: () => navigate("/messages/new"),
+      // }}
       />
-      <Layout>
-        <Layout.Section>
-          {loadingMarkup}
-          {qrCodesMarkup}
-          {emptyStateMarkup}
-        </Layout.Section>
-      </Layout>
+      {loadingMarkup}
+      {fetchedMessages?.length ?
+        <Layout>
+          <Layout.Section>
+            <Form>
+              <ContextualSaveBar
+                saveAction={{
+                  label: "Save",
+                  onAction: submit,
+                  loading: submitting,
+                  disabled: submitting,
+                }}
+                discardAction={{
+                  label: "Discard",
+                  onAction: reset,
+                  loading: submitting,
+                  disabled: submitting,
+                }}
+                visible={dirty}
+                fullWidth
+              />
+              <FormLayout>
+                <Card title="When do you want us to show the notifications?">
+                  <div style={{ padding: "2rem" }}>
+                    <div>
+                      <Checkbox
+                        label="Sales: Enable or disable notifications when a customer makes a purchase."
+                        checked={storeCheckbox}
+                        onChange={storeCheckboxHandler}
+                      />
+                    </div>
+                    <div>
+                      <Checkbox
+                        label="Cart: Enable or disable notifications when a customer adds a product to their cart."
+                        checked={cartCheckbox}
+                        onChange={cartCheckboxHandler}
+                      />
+                    </div>
+                    <div>
+                      <Checkbox
+                        label="Inventory: Enable or disable notifications when a product that was previously out of stock becomes available again."
+                        checked={inventoryCheckbox}
+                        onChange={inventoryCheckboxHandler}
+                      />
+                    </div>
+                  </div>
+                </Card>
+                <Card title="Customizations:" distribution="fill">
+                  <div style={{ paddingBottom: "1rem" }}>
+                    <Stack distribution="fill">
+                      <div>
+                        <div style={{ padding: "1rem 2rem 0" }}>
+                          <p>Set the position of the notifications vertically:</p>
+                          <div>
+                            <RadioButton
+                              label="Top"
+                              checked={positionY === "disabled"}
+                              name="positionY"
+                              onChange={() => handleChangePositionY(false, "disabled")}
+                            />
+                          </div>
+                          <div>
+                            <RadioButton
+                              label="Bottom"
+                              name="positionY"
+                              checked={positionY === "optional"}
+                              onChange={() => handleChangePositionY(false, "optional")}
+                            />
+                          </div>
+                        </div>
+                        <div style={{ padding: "1rem 2rem 0" }}>
+                          <p>Set the position of the notifications horizontalally:</p>
+                          <div>
+                            <RadioButton
+                              label="Right"
+                              checked={positionX === "disabled"}
+                              name="positionX"
+                              onChange={() => handleChangePositionX(false, "disabled")}
+                            />
+                          </div>
+                          <div>
+                            <RadioButton
+                              checked={positionX === "optional"}
+                              label="Left"
+                              name="positionX"
+                              onChange={() => handleChangePositionX(false, "optional")}
+                            />
+                          </div>
+                        </div>
+                        <div style={{ padding: "1rem 2rem 0" }}>
+                          <Select
+                            label="Notification Style:"
+                            options={optionsStyle}
+                            onChange={handleSelectStyleChange}
+                            value={selectedStyle}
+                          />
+                        </div>
+                      </div>
+                      <div>
+                        <div style={{ padding: "0 2rem 0" }}>
+                          <TextField
+                            prefix="#"
+                            label="Background Color:"
+                            value={"value"}
+                            // onChange={handleChange}
+                            autoComplete="off"
+                          />
+                        </div>
+                        <div style={{ padding: "1rem 2rem 0" }}>
+                          <TextField
+                            prefix="#"
+                            label="Text Color:"
+                            // value={value}
+                            // onChange={handleChange}
+                            autoComplete="off"
+                          />
+                        </div>
+                        <div style={{ padding: "1rem 2rem 0" }}>
+                          <Select
+                            label="Font:"
+                            options={optionsFont}
+                            onChange={handleSelectFontChange}
+                            value={selectedFont}
+                          />
+                        </div>
+                      </div>
+                    </Stack>
+                  </div>
+                </Card>
+
+              </FormLayout>
+            </Form>
+          </Layout.Section>
+          <Layout.Section secondary>
+            <Card sectioned title="Preview">
+              <p>ghola</p>
+            </Card>
+          </Layout.Section>
+        </Layout>
+        : null}
     </Page>
   );
 }
