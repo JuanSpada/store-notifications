@@ -104,7 +104,7 @@ export function MessageIndex({ Messages, loading, updateMessage }) {
           </IndexTable.Cell>
           <IndexTable.Cell>{type}</IndexTable.Cell>
           <IndexTable.Cell>{impressions}</IndexTable.Cell>
-          <IndexTable.Cell>{shopDomain === "default" ? <p>Cant be edited</p> : <Link onClick={() => navigate(`/messages/${id}`)}>Edit</Link>}</IndexTable.Cell>
+          <IndexTable.Cell><Link onClick={() => navigate(`/messages/${id}`)}>Edit</Link></IndexTable.Cell>
         </IndexTable.Row>
       );
     }

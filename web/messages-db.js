@@ -64,7 +64,7 @@ export const MessagesDB = {
     await this.ready;
     const query = `
       SELECT * FROM ${this.messagesTableName}
-      WHERE shopDomain = ? OR shopDomain = "default";
+      WHERE shopDomain = ?;
     `;
   
     const results = await this.__query(query, [shopDomain]);
