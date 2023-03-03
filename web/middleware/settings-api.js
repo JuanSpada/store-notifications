@@ -9,7 +9,9 @@
 import express from "express";
 
 import { SettingsDB } from "../settings-db.js";
-
+import { MessagesDB } from "../messages-db.js";
+// Default Messages
+import defaultMessages from '../helpers/default-messages.js';
 import {
   getSettingsOr404,
   getShopUrlFromSession,
@@ -26,9 +28,21 @@ export default function applySettingsApiEndpoints(app) {
       let rawSettingsData = await SettingsDB.list(
         shopDomain
       );
-
       //IF DOESNT HAVE SETTINGS WE CREATE THE DEFUALT
       if (rawSettingsData.length == 0) {
+        // DEFUALT MESSAGES
+        try {
+          for (const message of defaultMessages) {
+            await MessagesDB.create({
+              ...message,
+              /* Get the shop from the authorization header to prevent users from spoofing the data */
+              shopDomain: shopDomain,
+            });
+          }
+        } catch (error) {
+          console.error(error);
+          res.status(500).send(error.message);
+        }
         // DEFAULT SETTINGS
         const defaultSettings = {
           displaySalesStatus: 1,

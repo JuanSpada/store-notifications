@@ -5,9 +5,6 @@ INSERT INTO messages (shopDomain, value, type, impressions, status)
 VALUES ('default', 'A new customer just bought [product.name]! Get yours before it''s too late.', 'sales', 0, 1);
 
 INSERT INTO messages (shopDomain, value, type, impressions, status)
-VALUES ('default', 'A new customer just bought [product.name]! Get yours before it''s too late.', 'sales', 0, 1);
-
-INSERT INTO messages (shopDomain, value, type, impressions, status)
 VALUES ('default', 'Wow, [customer.name] just made a purchase! Join the happy customers and get [product name] now.', 'sales', 0, 1);
 
 INSERT INTO messages (shopDomain, value, type, impressions, status)
