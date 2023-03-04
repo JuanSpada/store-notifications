@@ -183,7 +183,7 @@ export function MessageForm({ Message: InitialMessage }) {
                   <p>Make your notifications more personal by including dynamic variables that will be replaced with the actual product or customer information when the notification is displayed.</p>
                   <p>For example, if you include the dynamic variable <strong>[product.name]</strong>, it will be replaced with the name of the product that triggered the notification. Similarly, if you include the dynamic variable <strong>[customer.name]</strong>, it will be replaced with the name of the customer who triggered the notification.</p>
                   <br />
-                  <p style={{color: "gray"}}>Note: we are only displaying customers first name, we never show full names or other sensitive information</p>
+                  <p style={{color: "gray"}}>Note: we are only displaying customers first name, we never show full names or other sensitive information.</p>
                 </div>
               </Card>
               <Card sectioned title="Type">

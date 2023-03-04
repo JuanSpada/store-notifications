@@ -19,11 +19,12 @@ import {
 } from "@shopify/app-bridge-react";
 
 // import { QRCodeIndex } from "../components";
-import { MessageIndex } from "../components";
 import { useAppQuery } from "../hooks";
 import React, { useState, useCallback, useEffect } from "react";
 import { useForm, useField, notEmptyString } from "@shopify/react-form";
+import { Notification } from "../components"
 
+import "./notificationCss.css";
 
 export default function HomePage() {
 
@@ -44,7 +45,7 @@ export default function HomePage() {
         const url = "/api/settings";
         const method = "PATCH";
         /* use (authenticated) fetch from App Bridge to send the request to the API and, if successful, clear the form to reset the ContextualSaveBar and parse the response JSON */
-        const response = await fetch(url, { 
+        const response = await fetch(url, {
           method,
           body: JSON.stringify(parsedBody),
           headers: { "Content-Type": "application/json" },
@@ -61,23 +62,24 @@ export default function HomePage() {
   );
 
 
-    /*
-    These are mock values. Setting these values lets you preview the loading markup and the empty state.
-  */
+  /*
+  These are mock values. Setting these values lets you preview the loading markup and the empty state.
+*/
   /* useAppQuery wraps react-query and the App Bridge authenticatedFetch function */
   const {
     data: fetchedSettings,
-    isLoading,
-
-    /*
-      react-query provides stale-while-revalidate caching.
-      By passing isRefetching to Index Tables we can show stale data and a loading state.
-      Once the query refetches, IndexTable updates and the loading state is removed.
-      This ensures a performant UX.
-    */
-    isRefetching,
+    isLoading: isSettingsLoading,
+    isRefetching: isSettingsRefetching, // que es esto?
   } = useAppQuery({
-    url: "/api/settings"
+    url: "/api/settings",
+  });
+
+  const {
+    data: fetchedMessages,
+    isLoading: isMessagesLoading,
+    isRefetching: isMessagesRefetching,
+  } = useAppQuery({
+    url: "/api/messages",
   });
 
   // Handle form validation
@@ -118,7 +120,7 @@ export default function HomePage() {
       style: useField({
         value: fetchedSettings?.style || "",
         validates: [(value) => {
-          if(value === ""){
+          if (value === "") {
             return "Please select a message type";
           }
         }]
@@ -132,7 +134,7 @@ export default function HomePage() {
       font: useField({
         value: fetchedSettings?.font || "",
         validates: [(value) => {
-          if(value === ""){
+          if (value === "") {
             return "Please select a message type";
           }
         }]
@@ -140,6 +142,10 @@ export default function HomePage() {
     },
     onSubmit,
   });
+
+  /* State de los messages */
+
+
 
   /* State de los checkbox */
   const [salesCheckbox, setSalesCheckbox] = useState(false);
@@ -189,7 +195,7 @@ export default function HomePage() {
     style.onChange(value);
   };
   const optionsStyle = [
-    {label: 'Select notification style', value: ''},
+    { label: 'Select notification style', value: '' },
     { label: 'Minimal', value: 'minimal' },
     { label: 'Bold', value: 'bold' },
     { label: 'Playful', value: 'playful' },
@@ -217,17 +223,34 @@ export default function HomePage() {
     font.onChange(value);
   }, []);
   const optionsFont = [
-    {label: 'Select notification font', value: ''},
-    {label: 'Use same as my store', value: 'default'},
+    { label: 'Select notification font', value: '' },
+    { label: 'Use same as my store', value: 'default' },
     { label: 'Font #1', value: '1' },
     { label: 'Font #2', value: '2' },
     { label: 'Font #3', value: '3' },
     { label: 'Font #4', value: '4' },
   ];
 
-  /* useEffect para asignar los valores al formulario */
+  const [filteredMessages, setFilteredMessages] = useState();
+  const filterMessages = () => {
+    const messageTypes = {
+      sales: salesCheckbox ? "sales" : null,
+      cart: cartCheckbox ? "cart" : null,
+      inventory: inventoryCheckbox ? "inventory" : null
+    };
+  
+    setFilteredMessages(
+      fetchedMessages.filter((message) => {
+        return message.status === 1 && Object.keys(messageTypes).some(type => {
+          return message.type === type && messageTypes[type];
+        });
+      })
+    );
+  };
+  
+  /* useEffect para asignar los valores al formulario y los mensajes al preview */
   useEffect(() => {
-    if (fetchedSettings) {
+    if (fetchedSettings && fetchedMessages) {
       setSalesCheckbox(fetchedSettings.displaySalesStatus);
       setCartCheckbox(fetchedSettings.displayCartStatus);
       setInventoryCheckbox(fetchedSettings.displayInventoryStatus);
@@ -238,12 +261,16 @@ export default function HomePage() {
       setBackgroundColor(fetchedSettings.backgroundColor)
       setTextColor(fetchedSettings.textColor)
     }
-  }, [fetchedSettings]);
-  
-  
+  }, [fetchedSettings, fetchedMessages]);
+
+  /* useEffect para filtrar los mensajes y desp cada vez que se llama algun checkbox lo volvemos a llamar */
+  useEffect(() => {
+    filterMessages();
+  }, [salesCheckbox, cartCheckbox, inventoryCheckbox]);
+
 
   /* loadingMarkup uses the loading component from AppBridge and components from Polaris  */
-  const loadingMarkup = isLoading ? (
+  const loadingMarkup = isSettingsLoading && isMessagesLoading ? (
     <Card sectioned>
       <Loading />
       <SkeletonBodyText />
@@ -267,7 +294,7 @@ export default function HomePage() {
       // }}
       />
       {loadingMarkup}
-      {fetchedSettings?
+      {fetchedSettings && fetchedMessages ?
         <Layout>
           <Layout.Section>
             <Form>
@@ -311,7 +338,7 @@ export default function HomePage() {
                         onChange={inventoryCheckboxHandler}
                       />
                     </div>
-                    <div style={{marginTop: "1rem"}}>
+                    <div style={{ marginTop: "1rem" }}>
                       <Link onClick={() => navigate("/messages")}>Edit notifications messages</Link>
                     </div>
                   </div>
@@ -408,7 +435,9 @@ export default function HomePage() {
           </Layout.Section>
           <Layout.Section secondary>
             <Card sectioned title="Preview">
-              <p>ghola</p>
+              {filteredMessages && filteredMessages.length > 0 ?
+                <Notification messages={filteredMessages}></Notification>
+                : <div>No messages to show</div>}
             </Card>
           </Layout.Section>
         </Layout>
