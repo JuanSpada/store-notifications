@@ -232,6 +232,7 @@ export default function HomePage() {
   ];
 
   const [filteredMessages, setFilteredMessages] = useState();
+  
   const filterMessages = () => {
     const messageTypes = {
       sales: salesCheckbox ? "sales" : null,
@@ -265,7 +266,9 @@ export default function HomePage() {
 
   /* useEffect para filtrar los mensajes y desp cada vez que se llama algun checkbox lo volvemos a llamar */
   useEffect(() => {
-    filterMessages();
+    if (fetchedSettings && fetchedMessages) {
+      filterMessages();
+    }
   }, [salesCheckbox, cartCheckbox, inventoryCheckbox]);
 
 
