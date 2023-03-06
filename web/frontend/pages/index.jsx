@@ -121,21 +121,23 @@ export default function HomePage() {
         value: fetchedSettings?.style || "",
         validates: [(value) => {
           if (value === "") {
-            return "Please select a message type";
+            return "Please select a notification style";
           }
         }]
       }),
       backgroundColor: useField({
         value: fetchedSettings?.backgroundColor || "",
+        validates: [notEmptyString("Please select a background color")],
       }),
       textColor: useField({
         value: fetchedSettings?.textColor || "",
+        validates: [notEmptyString("Please select a text color")],
       }),
       font: useField({
         value: fetchedSettings?.font || "",
         validates: [(value) => {
           if (value === "") {
-            return "Please select a message type";
+            return "Please select a notification font";
           }
         }]
       }),
@@ -177,15 +179,15 @@ export default function HomePage() {
 
   /* State de los radio */
   const [positionXValue, setPositionX] = useState("left");
-  const handleChangePositionX = useCallback((_checked, newValue) => {
-    setPositionX(newValue);
-    positionX.onChange(newValue);
+  const handleChangePositionX = useCallback((value) => {
+    setPositionX(value);
+    positionX.onChange(value);
   }, []);
 
   const [positionYValue, setPositionY] = useState("bottom");
-  const handleChangePositionY = useCallback((_checked, newValue) => {
-    setPositionY(newValue);
-    positionY.onChange(newValue);
+  const handleChangePositionY = useCallback((value) => {
+    setPositionY(value);
+    positionY.onChange(value);
   }, []);
 
   /* Style select */
@@ -252,15 +254,15 @@ export default function HomePage() {
   /* useEffect para asignar los valores al formulario y los mensajes al preview */
   useEffect(() => {
     if (fetchedSettings && fetchedMessages) {
-      setSalesCheckbox(fetchedSettings.displaySalesStatus);
-      setCartCheckbox(fetchedSettings.displayCartStatus);
-      setInventoryCheckbox(fetchedSettings.displayInventoryStatus);
-      setPositionY(fetchedSettings.positionY)
-      setPositionX(fetchedSettings.positionX)
-      setSelectedStyle(fetchedSettings.style)
-      setSelectedFont(fetchedSettings.font)
-      setBackgroundColor(fetchedSettings.backgroundColor)
-      setTextColor(fetchedSettings.textColor)
+      salesCheckboxHandler(fetchedSettings.displaySalesStatus === 1 ? true : false);
+      cartCheckboxHandler(fetchedSettings.displayCartStatus === 1 ? true : false);
+      inventoryCheckboxHandler(fetchedSettings.displayInventoryStatus === 1 ? true : false);
+      handleChangePositionX(fetchedSettings.positionX)
+      handleChangePositionY(fetchedSettings.positionY)
+      handleSelectStyleChange(fetchedSettings.style)
+      handleSelectFontChange(fetchedSettings.font)
+      handleBackgroundColorChange(fetchedSettings.backgroundColor)
+      handleTextColorChange(fetchedSettings.textColor)
     }
   }, [fetchedSettings, fetchedMessages]);
 
@@ -357,7 +359,7 @@ export default function HomePage() {
                               label="Top"
                               checked={positionYValue === "top"}
                               name="positionY"
-                              onChange={() => handleChangePositionY(false, "top")}
+                              onChange={() => handleChangePositionY("top")}
                               value={"top"}
                             />
                           </div>
@@ -366,7 +368,7 @@ export default function HomePage() {
                               label="Bottom"
                               name="positionY"
                               checked={positionYValue === "bottom"}
-                              onChange={() => handleChangePositionY(false, "bottom")}
+                              onChange={() => handleChangePositionY("bottom")}
                               value={"bottom"}
                             />
                           </div>
@@ -378,7 +380,7 @@ export default function HomePage() {
                               label="Right"
                               checked={positionXValue === "right"}
                               name="positionX"
-                              onChange={() => handleChangePositionX(false, "right")}
+                              onChange={() => handleChangePositionX("right")}
                               value="right"
                             />
                           </div>
@@ -387,13 +389,14 @@ export default function HomePage() {
                               checked={positionXValue === "left"}
                               label="Left"
                               name="positionX"
-                              onChange={() => handleChangePositionX(false, "left")}
+                              onChange={() => handleChangePositionX("left")}
                               value="left"
                             />
                           </div>
                         </div>
                         <div style={{ padding: "1rem 2rem 0" }}>
                           <Select
+                            {...style}
                             label="Notification Style:"
                             options={optionsStyle}
                             onChange={handleSelectStyleChange}
@@ -404,6 +407,7 @@ export default function HomePage() {
                       <div>
                         <div style={{ padding: "0 2rem 0" }}>
                           <TextField
+                            {...backgroundColor}
                             prefix="#"
                             label="Background Color:"
                             value={backgroundColorValue}
@@ -413,6 +417,7 @@ export default function HomePage() {
                         </div>
                         <div style={{ padding: "1rem 2rem 0" }}>
                           <TextField
+                            {...textColor}
                             prefix="#"
                             label="Text Color:"
                             value={textColorValue}
@@ -422,6 +427,7 @@ export default function HomePage() {
                         </div>
                         <div style={{ padding: "1rem 2rem 0" }}>
                           <Select
+                            {...font}
                             label="Font:"
                             options={optionsFont}
                             onChange={handleSelectFontChange}
