@@ -75,52 +75,20 @@ export default function applySettingsApiEndpoints(app) {
     }
   });
 
-  // POST NEW SETTINGS // NO DEBERIA USARLO HAGAMOS UN MIGRATE CON LOS VALORES DEFAULT
-  // app.post("/api/settings", async (req, res) => {
-  //   try {
-  //     const id = await SettingsDB.create({
-  //       ...(await parseSettingsBody(req)),
-
-  //       /* Get the shop from the authorization header to prevent users from spoofing the data */
-  //       shopDomain: await getShopUrlFromSession(req, res),
-  //     });
-  //     const createdSettings = await SettingsDB.read(id);
-  //     res.status(201).send(createdSettings[0]);
-  //   } catch (error) {
-  //     res.status(500).send(error.message);
-  //   }
-  // });
-
   // EDIT SETTINGS  // EDITAR ESTO PARA QUE EDITE DIRECTAMENTE LOS SETTINGS QUE CORRESPONDAN CON EL DOMAIN EN VEZ DE USAR ID
-  app.patch("/api/settings/:id", async (req, res) => {
-    const message = await getSettingsOr404(req, res);
-
-    if (message) {
+  app.patch("/api/settings", async (req, res) => {
+    const shopDomain = await getShopUrlFromSession(req, res);
+    let settings = await SettingsDB.list(
+      shopDomain
+    );
+    if (settings) {
       try {
-        const response = await SettingsDB.update(req.params.id, await parseSettingsBody(req));
-        res.status(200).send(response[0]);
+        const response = await SettingsDB.update(settings[0].id, await parseSettingsBody(req));
+        res.status(200).send(response);
       } catch (error) {
         res.status(500).send(error.message);
       }
     }
   });
 
-  // GET SINGLE SETTING  // NO DEBERIA USARLO
-  // app.get("/api/settings/:id", async (req, res) => {
-  //   const message = await getSettingsOr404(req, res);
-
-  //   if (message) {
-  //     res.status(200).send(message);
-  //   }
-  // });
-
-  // DELETE SETTTINGS // NO DEBERIA USARLO
-  // app.delete("/api/settings/:id", async (req, res) => {
-  //   const message = await getSettingsOr404(req, res);
-
-  //   if (message) {
-  //     await SettingsDB.delete(req.params.id);
-  //     res.status(200).send();
-  //   }
-  // });
 }

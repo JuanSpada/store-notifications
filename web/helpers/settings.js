@@ -37,8 +37,14 @@ status: integer
 */
 export async function parseSettingsBody(req, res) {
   return {
-    value: req.body.value,
-    type: req.body.type,
-    status: req.body.status
+    displaySalesStatus: req.body.displaySalesStatus,
+    displayCartStatus: req.body.displayCartStatus,
+    displayInventoryStatus: req.body.displayInventoryStatus,
+    positionX: req.body.positionX,
+    positionY: req.body.positionY,
+    style: req.body.style,
+    backgroundColor: req.body.backgroundColor,
+    textColor: req.body.textColor,
+    font: req.body.font
   };
 }

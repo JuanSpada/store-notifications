@@ -63,7 +63,7 @@ export const SettingsDB = {
     }
   ) {
     await this.ready;
-
+  
     const query = `
       UPDATE ${this.settingsTableName}
       SET
@@ -79,7 +79,6 @@ export const SettingsDB = {
       WHERE
         id = ?;
     `;
-
     await this.__query(query, [
       displaySalesStatus,
       displayCartStatus,
@@ -89,7 +88,8 @@ export const SettingsDB = {
       style,
       backgroundColor,
       textColor,
-      font
+      font,
+      id
     ]);
     return true;
   },

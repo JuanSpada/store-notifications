@@ -1,3 +1,5 @@
+// FALTA HACER QUE TE MUESTRE BIEN POR DEFUALT LAS SETTINGS DE LA DB Y NO APAREZCA EL BAR POR Q DE LA MANERA Q LO HICE CADA VEZ QUE CARGAS LA PAGINA APARECE EL BAR COMO SI FUESE QUE EDITASTE ALGO
+
 import { useNavigate, TitleBar, Loading } from "@shopify/app-bridge-react";
 import {
   Card,
@@ -19,10 +21,11 @@ import {
 } from "@shopify/app-bridge-react";
 
 // import { QRCodeIndex } from "../components";
-import { useAppQuery } from "../hooks";
 import React, { useState, useCallback, useEffect } from "react";
 import { useForm, useField, notEmptyString } from "@shopify/react-form";
 import { Notification } from "../components"
+/* Import the useAuthenticatedFetch hook included in the Node app template */
+import { useAuthenticatedFetch, useAppQuery } from "../hooks";
 
 import "./notificationCss.css";
 
@@ -34,14 +37,16 @@ export default function HomePage() {
     navigate within the embedded app and keep the browser in sync on reload.
   */
   const navigate = useNavigate();
+  const fetch = useAuthenticatedFetch();
 
+  const [Settings, setSettings] = useState();
 
   const onSubmit = useCallback(
     (body) => {
       (async () => {
         const parsedBody = body;
         console.log("parsedBody: ", parsedBody)
-        return { status: "success" };
+        // return { status: "success" };
         const url = "/api/settings";
         const method = "PATCH";
         /* use (authenticated) fetch from App Bridge to send the request to the API and, if successful, clear the form to reset the ContextualSaveBar and parse the response JSON */
@@ -52,8 +57,8 @@ export default function HomePage() {
         });
         if (response.ok) {
           makeClean();
-          console.log("response.body: ", response.body)
           const Settings = await response.json();
+          console.log("response.body: ", Settings)
         }
       })();
       return { status: "success" };
@@ -73,6 +78,10 @@ export default function HomePage() {
   } = useAppQuery({
     url: "/api/settings",
   });
+
+  if (fetchedSettings && !Settings) {
+    setSettings(fetchedSettings);
+  }
 
   const {
     data: fetchedMessages,
@@ -103,22 +112,22 @@ export default function HomePage() {
   } = useForm({
     fields: {
       displaySalesStatus: useField({
-        value: fetchedSettings?.displaySalesStatus || "",
+        value: Settings?.displaySalesStatus === 1 ? true : false || "",
       }),
       displayCartStatus: useField({
-        value: fetchedSettings?.displayCartStatus || "",
+        value: Settings?.displayCartStatus || "",
       }),
       displayInventoryStatus: useField({
-        value: fetchedSettings?.displayInventoryStatus || "",
+        value: Settings?.displayInventoryStatus || "",
       }),
       positionX: useField({
-        value: fetchedSettings?.positionX || "",
+        value: Settings?.positionX || "",
       }),
       positionY: useField({
-        value: fetchedSettings?.positionY || "",
+        value: Settings?.positionY || "",
       }),
       style: useField({
-        value: fetchedSettings?.style || "",
+        value: Settings?.style || "",
         validates: [(value) => {
           if (value === "") {
             return "Please select a notification style";
@@ -126,15 +135,15 @@ export default function HomePage() {
         }]
       }),
       backgroundColor: useField({
-        value: fetchedSettings?.backgroundColor || "",
+        value: Settings?.backgroundColor || "",
         validates: [notEmptyString("Please select a background color")],
       }),
       textColor: useField({
-        value: fetchedSettings?.textColor || "",
+        value: Settings?.textColor || "",
         validates: [notEmptyString("Please select a text color")],
       }),
       font: useField({
-        value: fetchedSettings?.font || "",
+        value: Settings?.font || "",
         validates: [(value) => {
           if (value === "") {
             return "Please select a notification font";
@@ -150,7 +159,7 @@ export default function HomePage() {
 
 
   /* State de los checkbox */
-  const [salesCheckbox, setSalesCheckbox] = useState(false);
+  const [salesCheckbox, setSalesCheckbox] = useState();
   const salesCheckboxHandler = useCallback(
     (value) => {
       setSalesCheckbox(value);
@@ -159,7 +168,7 @@ export default function HomePage() {
     [],
   );
 
-  const [cartCheckbox, setCartCheckbox] = useState(false);
+  const [cartCheckbox, setCartCheckbox] = useState();
   const cartCheckboxHandler = useCallback(
     (value) => {
       setCartCheckbox(value);
@@ -168,7 +177,7 @@ export default function HomePage() {
     [],
   );
 
-  const [inventoryCheckbox, setInventoryCheckbox] = useState(false);
+  const [inventoryCheckbox, setInventoryCheckbox] = useState();
   const inventoryCheckboxHandler = useCallback(
     (value) => {
       setInventoryCheckbox(value);
@@ -178,17 +187,17 @@ export default function HomePage() {
   );
 
   /* State de los radio */
-  const [positionXValue, setPositionX] = useState("left");
-  const handleChangePositionX = useCallback((value) => {
-    setPositionX(value);
-    positionX.onChange(value);
-  }, []);
+  // const [positionXValue, setPositionX] = useState("left");
+  // const handleChangePositionX = useCallback((value) => {
+  //   setPositionX(value);
+  //   positionX.onChange(value);
+  // }, []);
 
-  const [positionYValue, setPositionY] = useState("bottom");
-  const handleChangePositionY = useCallback((value) => {
-    setPositionY(value);
-    positionY.onChange(value);
-  }, []);
+  // const [positionYValue, setPositionY] = useState("bottom");
+  // const handleChangePositionY = useCallback((value) => {
+  //   setPositionY(value);
+  //   positionY.onChange(value);
+  // }, []);
 
   /* Style select */
   const [selectedStyle, setSelectedStyle] = useState('today');
@@ -205,18 +214,18 @@ export default function HomePage() {
   ];
 
   /* Background color field */
-  const [backgroundColorValue, setBackgroundColor] = useState();
-  const handleBackgroundColorChange = useCallback((newValue) => {
-    setBackgroundColor(newValue);
-    backgroundColor.onChange(newValue);
-  }, []);
+  // const [backgroundColorValue, setBackgroundColor] = useState();
+  // const handleBackgroundColorChange = useCallback((newValue) => {
+  //   setBackgroundColor(newValue);
+  //   backgroundColor.onChange(newValue);
+  // }, []);
 
   /* Text color field */
-  const [textColorValue, setTextColor] = useState();
-  const handleTextColorChange = useCallback((newValue) => {
-    setTextColor(newValue);
-    textColor.onChange(newValue);
-  }, []);
+  // const [textColorValue, setTextColor] = useState();
+  // const handleTextColorChange = useCallback((newValue) => {
+  //   setTextColor(newValue);
+  //   textColor.onChange(newValue);
+  // }, []);
 
   /* Font select */
   const [selectedFont, setSelectedFont] = useState('today');
@@ -254,15 +263,17 @@ export default function HomePage() {
   /* useEffect para asignar los valores al formulario y los mensajes al preview */
   useEffect(() => {
     if (fetchedSettings && fetchedMessages) {
-      salesCheckboxHandler(fetchedSettings.displaySalesStatus === 1 ? true : false);
-      cartCheckboxHandler(fetchedSettings.displayCartStatus === 1 ? true : false);
-      inventoryCheckboxHandler(fetchedSettings.displayInventoryStatus === 1 ? true : false);
-      handleChangePositionX(fetchedSettings.positionX)
-      handleChangePositionY(fetchedSettings.positionY)
-      handleSelectStyleChange(fetchedSettings.style)
-      handleSelectFontChange(fetchedSettings.font)
-      handleBackgroundColorChange(fetchedSettings.backgroundColor)
-      handleTextColorChange(fetchedSettings.textColor)
+      // setSettings(fetchedSettings);
+      console.log("Settings: ", Settings)
+      // salesCheckboxHandler(fetchedSettings.displaySalesStatus === 1 ? true : false);
+      // cartCheckboxHandler(fetchedSettings.displayCartStatus === 1 ? true : false);
+      // inventoryCheckboxHandler(fetchedSettings.displayInventoryStatus === 1 ? true : false);
+      // handleChangePositionX(fetchedSettings.positionX)
+      // handleChangePositionY(fetchedSettings.positionY)
+      // handleSelectStyleChange(fetchedSettings.style)
+      // handleSelectFontChange(fetchedSettings.font)
+      // handleBackgroundColorChange(fetchedSettings.backgroundColor)
+      // handleTextColorChange(fetchedSettings.textColor)
     }
   }, [fetchedSettings, fetchedMessages]);
 
@@ -324,6 +335,7 @@ export default function HomePage() {
                   <div style={{ padding: "2rem" }}>
                     <div>
                       <Checkbox
+                        {...displaySalesStatus}
                         label="Sales: Enable or disable notifications when a customer makes a purchase."
                         checked={salesCheckbox}
                         onChange={salesCheckboxHandler}
@@ -331,6 +343,7 @@ export default function HomePage() {
                     </div>
                     <div>
                       <Checkbox
+                        {...displayCartStatus}
                         label="Cart: Enable or disable notifications when a customer adds a product to their cart."
                         checked={cartCheckbox}
                         onChange={cartCheckboxHandler}
@@ -338,6 +351,7 @@ export default function HomePage() {
                     </div>
                     <div>
                       <Checkbox
+                        {...displayInventoryStatus}
                         label="Inventory: Enable or disable notifications when a product that was previously out of stock becomes available again."
                         checked={inventoryCheckbox}
                         onChange={inventoryCheckboxHandler}
@@ -356,20 +370,22 @@ export default function HomePage() {
                           <p>Set the position of the notifications vertically:</p>
                           <div>
                             <RadioButton
+                              {...positionY}
                               label="Top"
-                              checked={positionYValue === "top"}
+                              // checked={positionYValue === "top"}
                               name="positionY"
-                              onChange={() => handleChangePositionY("top")}
-                              value={"top"}
+                              // onChange={() => handleChangePositionY("top")}
+                              // value={"top"}
                             />
                           </div>
                           <div>
                             <RadioButton
+                              {...positionY}
                               label="Bottom"
                               name="positionY"
-                              checked={positionYValue === "bottom"}
-                              onChange={() => handleChangePositionY("bottom")}
-                              value={"bottom"}
+                              // checked={positionYValue === "bottom"}
+                              // onChange={() => handleChangePositionY("bottom")}
+                              // value={"bottom"}
                             />
                           </div>
                         </div>
@@ -377,20 +393,22 @@ export default function HomePage() {
                           <p>Set the position of the notifications horizontalally:</p>
                           <div>
                             <RadioButton
+                              {...positionX}
                               label="Right"
-                              checked={positionXValue === "right"}
+                              // checked={positionXValue === "right"}
                               name="positionX"
-                              onChange={() => handleChangePositionX("right")}
-                              value="right"
+                              // onChange={() => handleChangePositionX("right")}
+                              // value="right"
                             />
                           </div>
                           <div>
                             <RadioButton
-                              checked={positionXValue === "left"}
+                              {...positionX}
+                              // checked={positionXValue === "left"}
                               label="Left"
                               name="positionX"
-                              onChange={() => handleChangePositionX("left")}
-                              value="left"
+                              // onChange={() => handleChangePositionX("left")}
+                              // value="left"
                             />
                           </div>
                         </div>
@@ -400,7 +418,7 @@ export default function HomePage() {
                             label="Notification Style:"
                             options={optionsStyle}
                             onChange={handleSelectStyleChange}
-                            value={selectedStyle}
+                            // value={selectedStyle}
                           />
                         </div>
                       </div>
@@ -410,8 +428,8 @@ export default function HomePage() {
                             {...backgroundColor}
                             prefix="#"
                             label="Background Color:"
-                            value={backgroundColorValue}
-                            onChange={handleBackgroundColorChange}
+                            // value={backgroundColorValue}
+                            // onChange={handleBackgroundColorChange}
                             autoComplete="off"
                           />
                         </div>
@@ -420,8 +438,8 @@ export default function HomePage() {
                             {...textColor}
                             prefix="#"
                             label="Text Color:"
-                            value={textColorValue}
-                            onChange={handleTextColorChange}
+                            // value={textColorValue}
+                            // onChange={handleTextColorChange}
                             autoComplete="off"
                           />
                         </div>
@@ -431,7 +449,7 @@ export default function HomePage() {
                             label="Font:"
                             options={optionsFont}
                             onChange={handleSelectFontChange}
-                            value={selectedFont}
+                            // value={selectedFont}
                           />
                         </div>
                       </div>
