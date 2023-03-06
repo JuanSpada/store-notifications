@@ -22,7 +22,7 @@ import {
 
 // import { QRCodeIndex } from "../components";
 import React, { useState, useCallback, useEffect } from "react";
-import { useForm, useField, notEmptyString } from "@shopify/react-form";
+import { useForm, useField, notEmptyString, useChoiceField } from "@shopify/react-form";
 import { Notification } from "../components"
 /* Import the useAuthenticatedFetch hook included in the Node app template */
 import { useAuthenticatedFetch, useAppQuery } from "../hooks";
@@ -82,6 +82,7 @@ export default function HomePage() {
   if (fetchedSettings && !Settings) {
     setSettings(fetchedSettings);
   }
+  console.log("Settings: ", Settings);
 
   const {
     data: fetchedMessages,
@@ -120,12 +121,20 @@ export default function HomePage() {
       displayInventoryStatus: useField({
         value: Settings?.displayInventoryStatus || "",
       }),
-      positionX: useField({
-        value: Settings?.positionX || "",
+      positionY: useChoiceField({
+        value: Settings?.positionY || 'top',
       }),
-      positionY: useField({
-        value: Settings?.positionY || "",
+      positionX: useChoiceField({
+        value: Settings?.positionX || 'left',
       }),
+      // positionX: useField(Settings?.positionX || ""),
+      // positionY: useField(Settings?.positionY || ""),
+      // positionX: useField({
+      //   value: Settings?.positionX || "",
+      // }),
+      // positionY: useField({
+      //   value: Settings?.positionY || "",
+      // }),
       style: useField({
         value: Settings?.style || "",
         validates: [(value) => {
@@ -187,11 +196,11 @@ export default function HomePage() {
   );
 
   /* State de los radio */
-  // const [positionXValue, setPositionX] = useState("left");
-  // const handleChangePositionX = useCallback((value) => {
-  //   setPositionX(value);
-  //   positionX.onChange(value);
-  // }, []);
+  const [positionXValue, setPositionX] = useState("");
+  const handleChangePositionX = useCallback((value) => {
+    setPositionX(value);
+    positionX.onChange(value);
+  }, []);
 
   // const [positionYValue, setPositionY] = useState("bottom");
   // const handleChangePositionY = useCallback((value) => {
@@ -264,7 +273,7 @@ export default function HomePage() {
   useEffect(() => {
     if (fetchedSettings && fetchedMessages) {
       // setSettings(fetchedSettings);
-      console.log("Settings: ", Settings)
+      console.log("positionX: ", positionX.value)
       // salesCheckboxHandler(fetchedSettings.displaySalesStatus === 1 ? true : false);
       // cartCheckboxHandler(fetchedSettings.displayCartStatus === 1 ? true : false);
       // inventoryCheckboxHandler(fetchedSettings.displayInventoryStatus === 1 ? true : false);
@@ -297,7 +306,7 @@ export default function HomePage() {
     Use Polaris Page and TitleBar components to create the page layout,
     and include the empty state contents set above.
   */
-
+console.log("positionX.value: ", positionX)
 
   // NO PUEDO HACER QUE APAREZCA ALA IZQUIERDA Y FUNCIONE DISTRIBUTION FIELD EN STACK QUE ESLO QUE HACE RESPONSIVE EN SHOPIFY ADMIN, ESTO SERIA PARA MOSTRAR EL PREVIEW A LA DERECHA. ESTA PARTE ES COMPLIQUETIXD
   return (
@@ -372,20 +381,16 @@ export default function HomePage() {
                             <RadioButton
                               {...positionY}
                               label="Top"
-                              // checked={positionYValue === "top"}
                               name="positionY"
-                              // onChange={() => handleChangePositionY("top")}
-                              // value={"top"}
+                              value="top"
                             />
                           </div>
                           <div>
                             <RadioButton
                               {...positionY}
                               label="Bottom"
+                              value="bottom"
                               name="positionY"
-                              // checked={positionYValue === "bottom"}
-                              // onChange={() => handleChangePositionY("bottom")}
-                              // value={"bottom"}
                             />
                           </div>
                         </div>
@@ -395,20 +400,16 @@ export default function HomePage() {
                             <RadioButton
                               {...positionX}
                               label="Right"
-                              // checked={positionXValue === "right"}
                               name="positionX"
-                              // onChange={() => handleChangePositionX("right")}
-                              // value="right"
+                              onChange={handleChangePositionX}
                             />
                           </div>
                           <div>
                             <RadioButton
                               {...positionX}
-                              // checked={positionXValue === "left"}
                               label="Left"
                               name="positionX"
-                              // onChange={() => handleChangePositionX("left")}
-                              // value="left"
+                              onChange={handleChangePositionX}
                             />
                           </div>
                         </div>
