@@ -16,13 +16,17 @@ import {
   getSettingsOr404,
   getShopUrlFromSession,
   parseSettingsBody,
+  generateScript
 } from "../helpers/settings.js";
+
+import shopify from "../shopify.js";
 
 export default function applySettingsApiEndpoints(app) {
   app.use(express.json());
 
   // GET SETTINGS
   app.get("/api/settings", async (req, res) => {
+
     const shopDomain = await getShopUrlFromSession(req, res);
     try {
       let rawSettingsData = await SettingsDB.list(
@@ -67,6 +71,14 @@ export default function applySettingsApiEndpoints(app) {
           console.error(error);
           res.status(500).send(error.message);
         }
+        // MANDAMOS EL SCRIPT // TESTEARRRR
+        const script_tag  = new shopify.api.rest.ScriptTag({session: res.locals.shopify.session});
+        script_tag.event = "onload";
+        script_tag.src = "https://example.com/my_script.js";
+        await script_tag.save({
+          update: true,
+        });
+        generateScript(req, res);
       }
       res.status(200).send(rawSettingsData[0]);
     } catch (error) {
@@ -75,7 +87,7 @@ export default function applySettingsApiEndpoints(app) {
     }
   });
 
-  // EDIT SETTINGS  // EDITAR ESTO PARA QUE EDITE DIRECTAMENTE LOS SETTINGS QUE CORRESPONDAN CON EL DOMAIN EN VEZ DE USAR ID
+  // EDIT SETTINGS
   app.patch("/api/settings", async (req, res) => {
     const shopDomain = await getShopUrlFromSession(req, res);
     let settings = await SettingsDB.list(
@@ -93,5 +105,4 @@ export default function applySettingsApiEndpoints(app) {
       }
     }
   });
-
 }

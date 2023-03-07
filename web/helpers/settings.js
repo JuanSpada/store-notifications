@@ -1,4 +1,5 @@
 import { SettingsDB } from "../settings-db.js";
+import fs from 'fs';
 
 /*
   The app's database stores the productId and the discountId.
@@ -50,4 +51,18 @@ export async function parseSettingsBody(req, res) {
     textColor: req.body.textColor,
     font: req.body.font
   };
+}
+
+// GENERATE SCRIPT FUNCTION
+export async function generateScript(req, res) {
+  const script = `console.log("Store notification scripts installed.");`;
+  const filePath = `scripts/${res.locals.shopify.session.shop}.js`;
+  
+  fs.writeFile(filePath, script, (err) => {
+    if (err) {
+      console.error(`Error writing file ${filePath}: ${err}`);
+    } else {
+      console.log(`File ${filePath} written successfully.`);
+    }
+  });
 }

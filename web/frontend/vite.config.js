@@ -38,6 +38,7 @@ if (host === "localhost") {
     protocol: "wss",
     host: host,
     port: process.env.FRONTEND_PORT,
+    // port: 61147,
     clientPort: 443,
   };
 }
@@ -54,6 +55,7 @@ export default defineConfig({
   server: {
     host: "localhost",
     port: process.env.FRONTEND_PORT,
+    // port: 61147,
     hmr: hmrConfig,
     proxy: {
       "^/(\\?.*)?$": proxyOptions,
