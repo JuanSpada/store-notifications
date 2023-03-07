@@ -49,7 +49,6 @@ export default function HomePage() {
     (body) => {
       (async () => {
         const parsedBody = body;
-        console.log("parsedBody: ", parsedBody)
         // return { status: "success" };
         const url = "/api/settings";
         const method = "PATCH";
@@ -62,7 +61,6 @@ export default function HomePage() {
         if (response.ok) {
           makeClean();
           const Settings = await response.json();
-          console.log("response.body: ", Settings)
           setSettings(Settings)
         }
       })();
@@ -100,15 +98,13 @@ export default function HomePage() {
   const [filteredMessages, setFilteredMessages] = useState();
   const filterMessages = () => {
     const messageTypes = {
-      sales: Settings.displaySalesStatus === 1 ? "sales" : null,
-      cart: Settings.displayCartStatus === 1 ? "cart" : null,
-      inventory: Settings.displayInventoryStatus === 1 ? "inventory" : null
+      sales: Settings.displaySalesStatus === 1 || Settings.displaySalesStatus ? "sales" : null,
+      cart: Settings.displayCartStatus === 1 || Settings.displayCartStatus ? "cart" : null,
+      inventory: Settings.displayInventoryStatus === 1 || Settings.displayInventoryStatus ? "inventory" : null
     };
     
-    // console.log("messageTypes: ", messageTypes)
-    // console.log("fetchedMessages: ", fetchedMessages)
     setFilteredMessages(
-      fetchedMessages.filter((message) => {
+      fetchedMessages?.filter((message) => {
         return message.status === 1 && Object.keys(messageTypes).some(type => {
           return message.type === type && messageTypes[type];
         });
@@ -273,18 +269,9 @@ export default function HomePage() {
   /* useEffect para asignar los valores al formulario y los mensajes al preview */
   useEffect(() => {
     if (fetchedSettings && fetchedMessages) {
-      // setSettings(fetchedSettings);
-      // salesCheckboxHandler(fetchedSettings.displaySalesStatus === 1 ? true : false);
-      // cartCheckboxHandler(fetchedSettings.displayCartStatus === 1 ? true : false);
-      // inventoryCheckboxHandler(fetchedSettings.displayInventoryStatus === 1 ? true : false);
-      // handleChangePositionX(fetchedSettings.positionX)
-      // handleChangePositionY(fetchedSettings.positionY)
-      // handleSelectStyleChange(fetchedSettings.style)
-      // handleSelectFontChange(fetchedSettings.font)
-      // handleBackgroundColorChange(fetchedSettings.backgroundColor)
-      // handleTextColorChange(fetchedSettings.textColor)
+      filterMessages()
     }
-  }, [fetchedSettings, fetchedMessages]);
+  }, [fetchedSettings, fetchedMessages, Settings]);
 
   /* useEffect para filtrar los mensajes y desp cada vez que se llama algun checkbox lo volvemos a llamar */
   useEffect(() => {
