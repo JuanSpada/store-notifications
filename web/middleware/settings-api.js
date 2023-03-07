@@ -83,8 +83,11 @@ export default function applySettingsApiEndpoints(app) {
     );
     if (settings) {
       try {
-        const response = await SettingsDB.update(settings[0].id, await parseSettingsBody(req));
-        res.status(200).send(response);
+        await SettingsDB.update(settings[0].id, await parseSettingsBody(req));
+        let updatedSettings = await SettingsDB.list(
+          shopDomain
+        );
+        res.status(200).send(updatedSettings[0]);
       } catch (error) {
         res.status(500).send(error.message);
       }

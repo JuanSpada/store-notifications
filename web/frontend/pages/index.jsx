@@ -1,5 +1,7 @@
 // FALTA HACER QUE TE MUESTRE BIEN POR DEFUALT LAS SETTINGS DE LA DB Y NO APAREZCA EL BAR POR Q DE LA MANERA Q LO HICE CADA VEZ QUE CARGAS LA PAGINA APARECE EL BAR COMO SI FUESE QUE EDITASTE ALGO
 
+// cuiando desactivas todos los settings de q mensaje mostrar se cagan los position tambien, por que parece que si vienen vacios quedan "" en ves de false
+// Y TODAVIA NO ANDAN LOS FILTROS OSEA SI APAGAS SIN RECARGAR LA PAGINA EN PREVIEW SIGUEN APARECIENDO
 import { useNavigate, TitleBar, Loading } from "@shopify/app-bridge-react";
 import {
   Card,
@@ -13,6 +15,7 @@ import {
   TextField,
   FormLayout,
   Form,
+  ChoiceList,
   Link
 } from "@shopify/polaris";
 
@@ -41,6 +44,7 @@ export default function HomePage() {
 
   const [Settings, setSettings] = useState();
 
+
   const onSubmit = useCallback(
     (body) => {
       (async () => {
@@ -59,11 +63,12 @@ export default function HomePage() {
           makeClean();
           const Settings = await response.json();
           console.log("response.body: ", Settings)
+          setSettings(Settings)
         }
       })();
       return { status: "success" };
     },
-    []
+    [Settings, setSettings]
   );
 
 
@@ -82,7 +87,6 @@ export default function HomePage() {
   if (fetchedSettings && !Settings) {
     setSettings(fetchedSettings);
   }
-  console.log("Settings: ", Settings);
 
   const {
     data: fetchedMessages,
@@ -91,6 +95,26 @@ export default function HomePage() {
   } = useAppQuery({
     url: "/api/messages",
   });
+
+
+  const [filteredMessages, setFilteredMessages] = useState();
+  const filterMessages = () => {
+    const messageTypes = {
+      sales: Settings.displaySalesStatus === 1 ? "sales" : null,
+      cart: Settings.displayCartStatus === 1 ? "cart" : null,
+      inventory: Settings.displayInventoryStatus === 1 ? "inventory" : null
+    };
+    
+    // console.log("messageTypes: ", messageTypes)
+    // console.log("fetchedMessages: ", fetchedMessages)
+    setFilteredMessages(
+      fetchedMessages.filter((message) => {
+        return message.status === 1 && Object.keys(messageTypes).some(type => {
+          return message.type === type && messageTypes[type];
+        });
+      })
+    );
+  };
 
   // Handle form validation
   const {
@@ -112,29 +136,15 @@ export default function HomePage() {
     makeClean,
   } = useForm({
     fields: {
-      displaySalesStatus: useField({
-        value: Settings?.displaySalesStatus === 1 ? true : false || "",
-      }),
-      displayCartStatus: useField({
-        value: Settings?.displayCartStatus || "",
-      }),
-      displayInventoryStatus: useField({
-        value: Settings?.displayInventoryStatus || "",
-      }),
-      positionY: useChoiceField({
-        value: Settings?.positionY || 'top',
-      }),
-      positionX: useChoiceField({
-        value: Settings?.positionX || 'left',
-      }),
-      // positionX: useField(Settings?.positionX || ""),
-      // positionY: useField(Settings?.positionY || ""),
-      // positionX: useField({
-      //   value: Settings?.positionX || "",
-      // }),
-      // positionY: useField({
-      //   value: Settings?.positionY || "",
-      // }),
+      displaySalesStatus: useField(Settings?.displaySalesStatus === 1 ? true : false ),
+      displayCartStatus: useField(Settings?.displayCartStatus === 1 ? true : false ),
+      displayInventoryStatus: useField(Settings?.displayInventoryStatus === 1 ? true : false ),
+      positionX: useField(
+       [Settings?.positionX] || ['left'],
+      ),
+      positionY: useField(
+        [Settings?.positionY] || ['bottom'],
+      ),
       style: useField({
         value: Settings?.style || "",
         validates: [(value) => {
@@ -168,39 +178,46 @@ export default function HomePage() {
 
 
   /* State de los checkbox */
-  const [salesCheckbox, setSalesCheckbox] = useState();
-  const salesCheckboxHandler = useCallback(
-    (value) => {
-      setSalesCheckbox(value);
-      displaySalesStatus.onChange(value);
-    },
-    [],
-  );
+  // const [salesCheckbox, setSalesCheckbox] = useState();
+  // const salesCheckboxHandler = useCallback(
+  //   (value) => {
+  //     setSalesCheckbox(value);
+  //     displaySalesStatus.onChange(value);
+  //   },
+  //   [],
+  // );
 
-  const [cartCheckbox, setCartCheckbox] = useState();
-  const cartCheckboxHandler = useCallback(
-    (value) => {
-      setCartCheckbox(value);
-      displayCartStatus.onChange(value);
-    },
-    [],
-  );
+  // const [cartCheckbox, setCartCheckbox] = useState();
+  // const cartCheckboxHandler = useCallback(
+  //   (value) => {
+  //     setCartCheckbox(value);
+  //     displayCartStatus.onChange(value);
+  //   },
+  //   [],
+  // );
 
-  const [inventoryCheckbox, setInventoryCheckbox] = useState();
-  const inventoryCheckboxHandler = useCallback(
-    (value) => {
-      setInventoryCheckbox(value);
-      displayInventoryStatus.onChange(value);
-    },
-    [],
-  );
+  // const [inventoryCheckbox, setInventoryCheckbox] = useState();
+  // const inventoryCheckboxHandler = useCallback(
+  //   (value) => {
+  //     setInventoryCheckbox(value);
+  //     displayInventoryStatus.onChange(value);
+  //   },
+  //   [],
+  // );
 
   /* State de los radio */
-  const [positionXValue, setPositionX] = useState("");
+  // const [positionXValue, setPositionX] = useState("");
+  // const handleChangePositionX = useCallback((value) => {
+  //   setPositionX(value);
+  //   positionX.onChange(value);
+  // }, []);
+  
+  const [selectedPositionX, setSelectedPositionX] = useState("");
   const handleChangePositionX = useCallback((value) => {
-    setPositionX(value);
+    setSelectedPositionX(value);
     positionX.onChange(value);
   }, []);
+
 
   // const [positionYValue, setPositionY] = useState("bottom");
   // const handleChangePositionY = useCallback((value) => {
@@ -251,29 +268,12 @@ export default function HomePage() {
     { label: 'Font #4', value: '4' },
   ];
 
-  const [filteredMessages, setFilteredMessages] = useState();
   
-  const filterMessages = () => {
-    const messageTypes = {
-      sales: salesCheckbox ? "sales" : null,
-      cart: cartCheckbox ? "cart" : null,
-      inventory: inventoryCheckbox ? "inventory" : null
-    };
-  
-    setFilteredMessages(
-      fetchedMessages.filter((message) => {
-        return message.status === 1 && Object.keys(messageTypes).some(type => {
-          return message.type === type && messageTypes[type];
-        });
-      })
-    );
-  };
   
   /* useEffect para asignar los valores al formulario y los mensajes al preview */
   useEffect(() => {
     if (fetchedSettings && fetchedMessages) {
       // setSettings(fetchedSettings);
-      console.log("positionX: ", positionX.value)
       // salesCheckboxHandler(fetchedSettings.displaySalesStatus === 1 ? true : false);
       // cartCheckboxHandler(fetchedSettings.displayCartStatus === 1 ? true : false);
       // inventoryCheckboxHandler(fetchedSettings.displayInventoryStatus === 1 ? true : false);
@@ -291,8 +291,7 @@ export default function HomePage() {
     if (fetchedSettings && fetchedMessages) {
       filterMessages();
     }
-  }, [salesCheckbox, cartCheckbox, inventoryCheckbox]);
-
+  }, [fetchedSettings, fetchedMessages]);
 
   /* loadingMarkup uses the loading component from AppBridge and components from Polaris  */
   const loadingMarkup = isSettingsLoading && isMessagesLoading ? (
@@ -306,7 +305,6 @@ export default function HomePage() {
     Use Polaris Page and TitleBar components to create the page layout,
     and include the empty state contents set above.
   */
-console.log("positionX.value: ", positionX)
 
   // NO PUEDO HACER QUE APAREZCA ALA IZQUIERDA Y FUNCIONE DISTRIBUTION FIELD EN STACK QUE ESLO QUE HACE RESPONSIVE EN SHOPIFY ADMIN, ESTO SERIA PARA MOSTRAR EL PREVIEW A LA DERECHA. ESTA PARTE ES COMPLIQUETIXD
   return (
@@ -346,24 +344,24 @@ console.log("positionX.value: ", positionX)
                       <Checkbox
                         {...displaySalesStatus}
                         label="Sales: Enable or disable notifications when a customer makes a purchase."
-                        checked={salesCheckbox}
-                        onChange={salesCheckboxHandler}
+                        checked={displaySalesStatus.value}
+                        // onChange={salesCheckboxHandler}
                       />
                     </div>
                     <div>
                       <Checkbox
                         {...displayCartStatus}
                         label="Cart: Enable or disable notifications when a customer adds a product to their cart."
-                        checked={cartCheckbox}
-                        onChange={cartCheckboxHandler}
+                        checked={displayCartStatus.value}
+                        // onChange={cartCheckboxHandler}
                       />
                     </div>
                     <div>
                       <Checkbox
                         {...displayInventoryStatus}
                         label="Inventory: Enable or disable notifications when a product that was previously out of stock becomes available again."
-                        checked={inventoryCheckbox}
-                        onChange={inventoryCheckboxHandler}
+                        checked={displayInventoryStatus.value}
+                        // onChange={inventoryCheckboxHandler}
                       />
                     </div>
                     <div style={{ marginTop: "1rem" }}>
@@ -378,38 +376,28 @@ console.log("positionX.value: ", positionX)
                         <div style={{ padding: "1rem 2rem 0" }}>
                           <p>Set the position of the notifications vertically:</p>
                           <div>
-                            <RadioButton
-                              {...positionY}
-                              label="Top"
-                              name="positionY"
-                              value="top"
-                            />
-                          </div>
-                          <div>
-                            <RadioButton
-                              {...positionY}
-                              label="Bottom"
-                              value="bottom"
-                              name="positionY"
+                            <ChoiceList
+                              {...positionX}
+                              name="positionX"
+                              choices={[
+                                {label: 'Right', value: 'right'},
+                                {label: 'Left', value: 'left'},
+                              ]}
+                              selected={positionX.value}
                             />
                           </div>
                         </div>
                         <div style={{ padding: "1rem 2rem 0" }}>
                           <p>Set the position of the notifications horizontalally:</p>
                           <div>
-                            <RadioButton
-                              {...positionX}
-                              label="Right"
-                              name="positionX"
-                              onChange={handleChangePositionX}
-                            />
-                          </div>
-                          <div>
-                            <RadioButton
-                              {...positionX}
-                              label="Left"
-                              name="positionX"
-                              onChange={handleChangePositionX}
+                          <ChoiceList
+                              {...positionY}
+                              name="positionY"
+                              choices={[
+                                {label: 'Top', value: 'top'},
+                                {label: 'Bottom', value: 'bottom'},
+                              ]}
+                              selected={positionY.value}
                             />
                           </div>
                         </div>

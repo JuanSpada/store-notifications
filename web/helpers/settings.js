@@ -36,12 +36,15 @@ type: string
 status: integer
 */
 export async function parseSettingsBody(req, res) {
+  const displaySalesStatus = req.body.displaySalesStatus ? 1 : 0;
+  const displayCartStatus = req.body.displayCartStatus ? 1 : 0;
+  const displayInventoryStatus = req.body.displayInventoryStatus ? 1 : 0;
   return {
-    displaySalesStatus: req.body.displaySalesStatus,
-    displayCartStatus: req.body.displayCartStatus,
-    displayInventoryStatus: req.body.displayInventoryStatus,
-    positionX: req.body.positionX,
-    positionY: req.body.positionY,
+    displaySalesStatus: displaySalesStatus,
+    displayCartStatus: displayCartStatus,
+    displayInventoryStatus: displayInventoryStatus,
+    positionX: req.body.positionX[0],
+    positionY: req.body.positionY[0],
     style: req.body.style,
     backgroundColor: req.body.backgroundColor,
     textColor: req.body.textColor,
