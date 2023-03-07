@@ -1,7 +1,3 @@
-// FALTA HACER QUE TE MUESTRE BIEN POR DEFUALT LAS SETTINGS DE LA DB Y NO APAREZCA EL BAR POR Q DE LA MANERA Q LO HICE CADA VEZ QUE CARGAS LA PAGINA APARECE EL BAR COMO SI FUESE QUE EDITASTE ALGO
-
-// cuiando desactivas todos los settings de q mensaje mostrar se cagan los position tambien, por que parece que si vienen vacios quedan "" en ves de false
-// Y TODAVIA NO ANDAN LOS FILTROS OSEA SI APAGAS SIN RECARGAR LA PAGINA EN PREVIEW SIGUEN APARECIENDO
 import { useNavigate, TitleBar, Loading } from "@shopify/app-bridge-react";
 import {
   Card,
@@ -169,64 +165,6 @@ export default function HomePage() {
     onSubmit,
   });
 
-  /* State de los messages */
-
-
-
-  /* State de los checkbox */
-  // const [salesCheckbox, setSalesCheckbox] = useState();
-  // const salesCheckboxHandler = useCallback(
-  //   (value) => {
-  //     setSalesCheckbox(value);
-  //     displaySalesStatus.onChange(value);
-  //   },
-  //   [],
-  // );
-
-  // const [cartCheckbox, setCartCheckbox] = useState();
-  // const cartCheckboxHandler = useCallback(
-  //   (value) => {
-  //     setCartCheckbox(value);
-  //     displayCartStatus.onChange(value);
-  //   },
-  //   [],
-  // );
-
-  // const [inventoryCheckbox, setInventoryCheckbox] = useState();
-  // const inventoryCheckboxHandler = useCallback(
-  //   (value) => {
-  //     setInventoryCheckbox(value);
-  //     displayInventoryStatus.onChange(value);
-  //   },
-  //   [],
-  // );
-
-  /* State de los radio */
-  // const [positionXValue, setPositionX] = useState("");
-  // const handleChangePositionX = useCallback((value) => {
-  //   setPositionX(value);
-  //   positionX.onChange(value);
-  // }, []);
-  
-  const [selectedPositionX, setSelectedPositionX] = useState("");
-  const handleChangePositionX = useCallback((value) => {
-    setSelectedPositionX(value);
-    positionX.onChange(value);
-  }, []);
-
-
-  // const [positionYValue, setPositionY] = useState("bottom");
-  // const handleChangePositionY = useCallback((value) => {
-  //   setPositionY(value);
-  //   positionY.onChange(value);
-  // }, []);
-
-  /* Style select */
-  const [selectedStyle, setSelectedStyle] = useState('today');
-  const handleSelectStyleChange = (value) => {
-    setSelectedStyle(value);
-    style.onChange(value);
-  };
   const optionsStyle = [
     { label: 'Select notification style', value: '' },
     { label: 'Minimal', value: 'minimal' },
@@ -234,27 +172,6 @@ export default function HomePage() {
     { label: 'Playful', value: 'playful' },
     { label: 'Elegant', value: 'elegant' },
   ];
-
-  /* Background color field */
-  // const [backgroundColorValue, setBackgroundColor] = useState();
-  // const handleBackgroundColorChange = useCallback((newValue) => {
-  //   setBackgroundColor(newValue);
-  //   backgroundColor.onChange(newValue);
-  // }, []);
-
-  /* Text color field */
-  // const [textColorValue, setTextColor] = useState();
-  // const handleTextColorChange = useCallback((newValue) => {
-  //   setTextColor(newValue);
-  //   textColor.onChange(newValue);
-  // }, []);
-
-  /* Font select */
-  const [selectedFont, setSelectedFont] = useState('today');
-  const handleSelectFontChange = useCallback((value) => {
-    setSelectedFont(value);
-    font.onChange(value);
-  }, []);
   const optionsFont = [
     { label: 'Select notification font', value: '' },
     { label: 'Use same as my store', value: 'default' },
@@ -263,8 +180,6 @@ export default function HomePage() {
     { label: 'Font #3', value: '3' },
     { label: 'Font #4', value: '4' },
   ];
-
-  
   
   /* useEffect para asignar los valores al formulario y los mensajes al preview */
   useEffect(() => {
@@ -293,7 +208,6 @@ export default function HomePage() {
     and include the empty state contents set above.
   */
 
-  // NO PUEDO HACER QUE APAREZCA ALA IZQUIERDA Y FUNCIONE DISTRIBUTION FIELD EN STACK QUE ESLO QUE HACE RESPONSIVE EN SHOPIFY ADMIN, ESTO SERIA PARA MOSTRAR EL PREVIEW A LA DERECHA. ESTA PARTE ES COMPLIQUETIXD
   return (
     <Page fullWidth={true}>
       <TitleBar
@@ -343,14 +257,14 @@ export default function HomePage() {
                         // onChange={cartCheckboxHandler}
                       />
                     </div>
-                    <div>
+                    {/* <div>
                       <Checkbox
                         {...displayInventoryStatus}
                         label="Inventory: Enable or disable notifications when a product that was previously out of stock becomes available again."
                         checked={displayInventoryStatus.value}
                         // onChange={inventoryCheckboxHandler}
                       />
-                    </div>
+                    </div> */}
                     <div style={{ marginTop: "1rem" }}>
                       <Link onClick={() => navigate("/messages")}>Edit notifications messages</Link>
                     </div>
@@ -393,7 +307,7 @@ export default function HomePage() {
                             {...style}
                             label="Notification Style:"
                             options={optionsStyle}
-                            onChange={handleSelectStyleChange}
+                            // onChange={handleSelectStyleChange}
                             // value={selectedStyle}
                           />
                         </div>
@@ -424,7 +338,7 @@ export default function HomePage() {
                             {...font}
                             label="Font:"
                             options={optionsFont}
-                            onChange={handleSelectFontChange}
+                            // onChange={handleSelectFontChange}
                             // value={selectedFont}
                           />
                         </div>
