@@ -14,7 +14,7 @@ import applyWebhooksEndpoints from "./middleware/webhooks.js";
 
 import applyQrCodePublicEndpoints from "./middleware/qr-code-public.js";
 
-import {createSocketConnection} from "./helpers/socket.js";
+// import {createSocketConnection} from "./helpers/socket.js";
 
 const PORT = parseInt(process.env.BACKEND_PORT || process.env.PORT, 10);
 
@@ -54,15 +54,15 @@ applyWebhooksEndpoints(app);
 app.use(serveStatic(STATIC_PATH, { index: false }));
 
 //creamos el socket
-app.use(async (req, res, next) => {
-  // Get the shop domain from the request object
-  const shopDomain = `https://${req.query.shop}`
-  // Pass the shop domain to the createSocketConnection function
-  const socket = createSocketConnection(shopDomain);
-  // Attach the socket object to the request object so it can be accessed in downstream middleware
-  req.socket = socket;
-  next();
-});
+// app.use(async (req, res, next) => {
+//   // Get the shop domain from the request object
+//   const shopDomain = `https://${req.query.shop}`
+//   // Pass the shop domain to the createSocketConnection function
+//   // const socket = createSocketConnection(shopDomain);
+//   // Attach the socket object to the request object so it can be accessed in downstream middleware
+//   req.socket = socket;
+//   next();
+// });
 
 app.use("/*", shopify.ensureInstalledOnShop(), async (_req, res, _next) => {
   return res

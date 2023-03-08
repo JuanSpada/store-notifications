@@ -1,6 +1,6 @@
 // cuando acepten la app en producción va a ver que cambiar el endpoint de los webhooks por el de /api/webhooks no?
 // ESTO FUNCIONA DIFERENTE EN CADA STORE? CHEQUEAR AL 100% ESO, ME PARECE Q NO, Q ESTAN TODOS CONECTADOS AL MISMO SOCKET
-// http://localhost:50525/webhooks
+// http://localhost:63874/webhooks
 
 
 //ERRORES:
