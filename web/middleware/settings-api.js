@@ -30,9 +30,6 @@ export default function applySettingsApiEndpoints(app) {
   // GET SETTINGS
   app.get("/api/settings", async (req, res) => {
     const shopDomain = await getShopUrlFromSession(req, res);
-    
-    // test
-    sendNotification(shopDomain, "holaaa")
 
     try {
       let rawSettingsData = await SettingsDB.list(
