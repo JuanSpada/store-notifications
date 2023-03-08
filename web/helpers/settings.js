@@ -55,7 +55,10 @@ export async function parseSettingsBody(req, res) {
 
 // GENERATE SCRIPT FUNCTION
 export async function generateScript(req, res) {
-  const script = `console.log("Store notification scripts installed.");`;
+  const script = `
+  console.log("Store notification scripts installed.");
+  var socket = io();
+  `;
   const filePath = `scripts/${res.locals.shopify.session.shop}.js`;
   
   fs.writeFile(filePath, script, (err) => {

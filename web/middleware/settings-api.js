@@ -21,13 +21,19 @@ import {
 
 import shopify from "../shopify.js";
 
+import {sendNotification} from "../helpers/socket.js"
+
+
 export default function applySettingsApiEndpoints(app) {
   app.use(express.json());
 
   // GET SETTINGS
   app.get("/api/settings", async (req, res) => {
-
     const shopDomain = await getShopUrlFromSession(req, res);
+    
+    // test
+    sendNotification(shopDomain, "holaaa")
+
     try {
       let rawSettingsData = await SettingsDB.list(
         shopDomain
@@ -71,13 +77,30 @@ export default function applySettingsApiEndpoints(app) {
           console.error(error);
           res.status(500).send(error.message);
         }
+        // INSTALAMOS SOCKET
+        const socketScript = new shopify.api.rest.ScriptTag({
+          session: res.locals.shopify.session
+        });
+        socketScript.src = "https://cdnjs.cloudflare.com/ajax/libs/socket.io/4.3.1/socket.io.min.js";
+        socketScript.event = "onload";
+        await socketScript.save();
+        generateScript(req, res);
         // MANDAMOS EL SCRIPT // TESTEARRRR
         const script_tag  = new shopify.api.rest.ScriptTag({session: res.locals.shopify.session});
         script_tag.event = "onload";
-        script_tag.src = "https://example.com/my_script.js";
+        script_tag.src = `http://localhost:56673/scripts/${res.locals.shopify.session.shop}.js`;
         await script_tag.save({
           update: true,
         });
+        //WEBHOOK DE ORDER CREATED
+        const webhook = new shopify.rest.Webhook({session: session});
+        webhook.address = "http://localhost:52471/api/webhooks";
+        webhook.topic = "orders/create";
+        webhook.format = "json";
+        await webhook.save({
+          update: true,
+        });
+        
         generateScript(req, res);
       }
       res.status(200).send(rawSettingsData[0]);

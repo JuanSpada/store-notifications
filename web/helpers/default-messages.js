@@ -8,7 +8,7 @@ const messages = [
     type: "sales"
   },
   {
-    value: "Wow, [customer.name] just made a purchase! Join the happy customers and get [product name] now.",
+    value: "Wow, [customer.name] just made a purchase! Join the happy customers and get [product.name] now.",
     type: "sales"
   },
   {

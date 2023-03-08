@@ -41,5 +41,5 @@ const shopify = shopifyApp({
     path: "/api/webhooks",
   },
   sessionStorage: sessionDb,
-});
+}); 
 export default shopify;
