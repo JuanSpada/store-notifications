@@ -15,7 +15,10 @@ export function Notification({ messages }) {
 
   return (
     <div className="notification">
-        <div className="notification__icon"></div>
+        <button class="notification__close-btn">&times;</button>
+        <div className="notification__icon">
+          <img src="../public/icons8-bell-24.png" alt="" />
+        </div>
         <div className="notification__message">
         <h2>{messages[messageIndex].value}</h2>
         </div>

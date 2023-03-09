@@ -1,4 +1,5 @@
 import { MessagesDB } from "../messages-db.js";
+import { SettingsDB } from "../settings-db.js";
 
 /*
   The app's database stores the productId and the discountId.
@@ -41,4 +42,19 @@ export async function parseMessageBody(req, res) {
     type: req.body.type,
     status: req.body.status
   };
+}
+
+export async function getRandomSaleMessage(shopDomain){
+  const rawMessagesData = await MessagesDB.list( // CAMBIAR ESTO DESP xq si lo llamo desde webhooks q es donde va a estar sin https
+    shopDomain
+  );
+  // filtramos que esten prendidos y que sean de sales
+  const messages = rawMessagesData.filter(message => message.status === 1 && message.type === "sales");
+  const randomIndex = Math.floor(Math.random() * messages.length);
+  const randomMessage = messages[randomIndex];
+  if(randomMessage){
+    return randomMessage.value;
+  }else{
+    return ;
+  }
 }

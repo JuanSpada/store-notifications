@@ -21,7 +21,10 @@ import {
 
 import shopify from "../shopify.js";
 
+
+//tests imports
 import {sendNotification} from "../helpers/socket.js"
+import {getRandomSaleMessage} from "../helpers/messages.js"
 
 
 export default function applySettingsApiEndpoints(app) {
@@ -31,6 +34,10 @@ export default function applySettingsApiEndpoints(app) {
   app.get("/api/settings", async (req, res) => {
     const shopDomain = await getShopUrlFromSession(req, res);
 
+    // test
+    console.log(await getRandomSaleMessage(shopDomain))
+
+    
     try {
       let rawSettingsData = await SettingsDB.list(
         shopDomain
@@ -58,8 +65,8 @@ export default function applySettingsApiEndpoints(app) {
           positionX: "right",
           positionY: "top",
           style: "elegant",
-          backgroundColor: "000000",
-          textColor: "FFFFFF",
+          backgroundColor: "D3D3D3",
+          textColor: "3a3636",
           font: "default"
         }
         try {
