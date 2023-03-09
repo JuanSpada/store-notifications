@@ -165,6 +165,9 @@ export default function HomePage() {
     onSubmit,
   });
 
+  const handleBackgroundColorChange = useCallback((newValue) => setValue(newValue), []);
+
+
   const optionsStyle = [
     { label: 'Select notification style', value: '' },
     { label: 'Minimal', value: 'minimal' },
@@ -173,12 +176,13 @@ export default function HomePage() {
     { label: 'Elegant', value: 'elegant' },
   ];
   const optionsFont = [
-    { label: 'Select notification font', value: '' },
-    { label: 'Use same as my store', value: 'default' },
-    { label: 'Font #1', value: '1' },
-    { label: 'Font #2', value: '2' },
-    { label: 'Font #3', value: '3' },
-    { label: 'Font #4', value: '4' },
+    { label: 'Select notification font', value: "" },
+    { label: 'Use same as my store', value: "inherit" },
+    { label: 'Noto Sans', value: "'Noto Sans', sans-serif" },
+    { label: 'Noto Sans Mono', value: "'Noto Sans Mono', monospace" },
+    { label: 'Noto Sans Symbols', value: "'Noto Sans Symbols', sans-serif" },
+    { label: 'Noto Serif Display', value: "'Noto Serif Display', serif" },
+    { label: 'Roboto', value: "'Roboto', sans-serif" },
   ];
   
   /* useEffect para asignar los valores al formulario y los mensajes al preview */
@@ -352,8 +356,8 @@ export default function HomePage() {
           </Layout.Section>
           <Layout.Section secondary>
             <Card sectioned title="Preview">
-              {filteredMessages && filteredMessages.length > 0 ?
-                <Notification messages={filteredMessages}></Notification>
+              {Settings && filteredMessages && filteredMessages.length > 0 ?
+                <Notification settings={Settings} messages={filteredMessages}></Notification>
                 : <div>No messages to show</div>}
             </Card>
           </Layout.Section>

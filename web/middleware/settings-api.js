@@ -81,6 +81,8 @@ export default function applySettingsApiEndpoints(app) {
           console.error(error);
           res.status(500).send(error.message);
         }
+
+        // SCRIPTS PARA EL FRONT
         // INSTALAMOS SOCKET
         const socketScript = new shopify.api.rest.ScriptTag({
           session: res.locals.shopify.session

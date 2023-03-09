@@ -1,3 +1,11 @@
+@import url('https://fonts.googleapis.com/css2?family=Noto+Sans+Mono:wght@100;300;700&family=Noto+Sans+Symbols:wght@100;300;700&family=Noto+Sans:wght@100;300;700&family=Noto+Serif+Display:wght@100;300;700&family=Roboto:wght@100;300;700&display=swap');
+/* FONTS
+font-family: 'Noto Sans', sans-serif;
+font-family: 'Noto Sans Mono', monospace;
+font-family: 'Noto Sans Symbols', sans-serif;
+font-family: 'Noto Serif Display', serif;
+font-family: 'Roboto', sans-serif; 
+*/
 
 .notification{
   position: relative;
@@ -19,7 +27,7 @@
     min-width: 50px;
     min-height: 50px;
     border-radius:50%;
-    background: #EEF7FE;
+    /* background: #EEF7FE; */
 }
 .notification__message{
     margin: auto;
