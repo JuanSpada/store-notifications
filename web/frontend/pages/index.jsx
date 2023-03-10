@@ -178,11 +178,19 @@ export default function HomePage() {
   const optionsFont = [
     { label: 'Select notification font', value: "" },
     { label: 'Use same as my store', value: "inherit" },
-    { label: 'Noto Sans', value: "'Noto Sans', sans-serif" },
-    { label: 'Noto Sans Mono', value: "'Noto Sans Mono', monospace" },
-    { label: 'Noto Sans Symbols', value: "'Noto Sans Symbols', sans-serif" },
-    { label: 'Noto Serif Display', value: "'Noto Serif Display', serif" },
+    { label: 'Open Sans', value: "'Open Sans', sans-serif" },
     { label: 'Roboto', value: "'Roboto', sans-serif" },
+    { label: 'Lato', value: "'Lato', sans-serif" },
+    { label: 'Montserrat', value: "'Montserrat', sans-serif" },
+    { label: 'Source Sans Pro', value: "'Source Sans Pro', sans-serif" },
+    { label: 'Raleway', value: "'Raleway', sans-serif" },
+    { label: 'Ubuntu', value: "'Ubuntu', sans-serif" },
+    { label: 'Merriweather', value: "'Merriweather', serif" },
+    { label: 'Poppins', value: "'Poppins', sans-serif" },
+    { label: 'Oswald', value: "'Oswald', sans-serif" },
+    { label: 'Noto Sans', value: "'Noto Sans', sans-serif" },
+    { label: 'Playfair Display', value: "'Playfair Display', serif" },
+    { label: 'Fira Sans', value: "'Fira Sans', sans-serif" },
   ];
   
   /* useEffect para asignar los valores al formulario y los mensajes al preview */

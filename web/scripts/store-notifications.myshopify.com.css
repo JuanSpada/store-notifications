@@ -1,0 +1,53 @@
+
+/* FALTA HACER DINAMICO */
+@import url('https://fonts.googleapis.com/css2?family=Noto+Sans+Mono:wght@100;300;700&family=Noto+Sans+Symbols:wght@100;300;700&family=Noto+Sans:wght@100;300;700&family=Noto+Serif+Display:wght@100;300;700&family=Roboto:wght@100;300;700&display=swap');
+.notification {
+  max-width: 50rem;
+  position: fixed;
+  bottom: 0;
+  right: 0;
+  padding: 5px 25px 5px 5px;
+  gap: 14px;
+  display: flex;
+  border-radius: 8px;
+  background-color: #d3d3d3;
+  box-shadow: 0 0.5rem 1.2rem rgb(0 0 0 / 20%);
+}
+.notification.show {
+  animation: fadeIn 0.5s ease-in-out;
+}
+@keyframes fadeIn {
+  from { opacity: 0; }
+  to { opacity: 1; }
+}
+.notification__icon {
+  margin: auto;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 50px;
+  height: 50px;
+  min-width: 50px;
+  min-height: 50px;
+  border-radius: 50%;
+}
+.notification__message {
+  margin: auto;
+}
+.notification__message h2 {
+  font-size: 1.5rem;
+  color: #3a3636;
+  margin: 0;
+  padding: 0;
+}
+.notification__close-btn {
+  position: absolute;
+  top: 0;
+  right: 8px;
+  border: none;
+  background: none;
+  font-size: 2.5rem;
+  cursor: pointer;
+  color: #000;
+  padding: 0;
+}

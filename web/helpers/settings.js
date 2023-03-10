@@ -54,14 +54,29 @@ export async function parseSettingsBody(req, res) {
 }
 
 // GENERATE SCRIPT FUNCTION
+// Tengo que tener un archivo default de css y renderizarlo acá. Además de eso cambiar los estilos para que sean únicos y terminar de hacer para que venga en display none y aparezca con algun tipo de animacion con el mensaje. Los css dinamicos los hacemos inline? o vamos a tener que generar unos css para cada store? veremos
 export async function generateScript(req, res) {
   const script = `
-  console.log("Store notification scripts installed.");
-  var socket = io();
-  `;
+
+`;
   const filePath = `scripts/${res.locals.shopify.session.shop}.js`;
   
   fs.writeFile(filePath, script, (err) => {
+    if (err) {
+      console.error(`Error writing file ${filePath}: ${err}`);
+    } else {
+      console.log(`File ${filePath} written successfully.`);
+    }
+  });
+}
+
+export async function generateCss(req, res) {
+  const css = `
+
+`;
+  const filePath = `scripts/${res.locals.shopify.session.shop}.css`;
+  
+  fs.writeFile(filePath, css, (err) => {
     if (err) {
       console.error(`Error writing file ${filePath}: ${err}`);
     } else {

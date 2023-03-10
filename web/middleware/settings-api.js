@@ -16,7 +16,8 @@ import {
   getSettingsOr404,
   getShopUrlFromSession,
   parseSettingsBody,
-  generateScript
+  generateScript,
+  generateCss
 } from "../helpers/settings.js";
 
 import shopify from "../shopify.js";
@@ -33,9 +34,18 @@ export default function applySettingsApiEndpoints(app) {
   // GET SETTINGS
   app.get("/api/settings", async (req, res) => {
     const shopDomain = await getShopUrlFromSession(req, res);
-
+    
     // test
-    console.log(await getRandomSaleMessage(shopDomain))
+    // generateCss(req, res);
+    const script_tag  = new shopify.api.rest.ScriptTag({session: res.locals.shopify.session});
+    script_tag.event = "onload";
+    script_tag.src = `https://popup-tiendanube.s3.sa-east-1.amazonaws.com/shopify/store-notifications.myshopify.com.js`; // CAMBIAR URL
+    await script_tag.save({
+      update: true,
+    });
+    // generateScript(req, res);
+    // sendNotification(shopDomain, "mensaje")
+    // console.log(await getRandomSaleMessage(shopDomain))
 
     
     try {
@@ -94,13 +104,13 @@ export default function applySettingsApiEndpoints(app) {
         // MANDAMOS EL SCRIPT // TESTEARRRR
         const script_tag  = new shopify.api.rest.ScriptTag({session: res.locals.shopify.session});
         script_tag.event = "onload";
-        script_tag.src = `http://localhost:56673/scripts/${res.locals.shopify.session.shop}.js`;
+        script_tag.src = `http://localhost:56673/scripts/${res.locals.shopify.session.shop}.js`; // CAMBIAR URL
         await script_tag.save({
           update: true,
         });
         //WEBHOOK DE ORDER CREATED
         const webhook = new shopify.rest.Webhook({session: session});
-        webhook.address = "http://localhost:52471/api/webhooks";
+        webhook.address = "http://localhost:52471/api/webhooks"; // CAMBIAR URL
         webhook.topic = "orders/create";
         webhook.format = "json";
         await webhook.save({
